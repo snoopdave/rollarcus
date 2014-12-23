@@ -1,24 +1,26 @@
 README.txt
+===
 
 This file exists at the top-level of the Roller source tree.
 
 Roller is made up of the following Maven projects:
 
-  roller-project:         Top level project
-  app:                    Roller Weblogger webapp, JSP pages, Velocity templates
-  assembly-release:       Used to create official distributions of Roller
-  docs:                   Roller documentation in ODT (OpenOffice/LibreOffice) format
-  it-selenium             Integrated browser tests for Roller using Selenium
+roller-project:         Top level project
+* app:                    Roller Weblogger webapp, JSP pages, Velocity templates
+* assembly-release:       Used to create official distributions of Roller
+* docs:                   Roller documentation in ODT (OpenOffice/LibreOffice) format
+* it-selenium             Integrated browser tests for Roller using Selenium
 
 To pull the latest trunk sources you need a Subversion client:
-  svn co https://svn.apache.org/repos/asf/roller/trunk roller_trunk
+
+svn co https://svn.apache.org/repos/asf/roller/trunk roller_trunk
 
 Building this version of Roller requires Apache Maven 3.0.5.
-  - How to build Roller: https://cwiki.apache.org/confluence/x/EM4
-  - To build and run Roller on Eclipse: https://cwiki.apache.org/confluence/x/EM4
+How to build Roller: https://cwiki.apache.org/confluence/x/EM4
+To build and run Roller on Eclipse: https://cwiki.apache.org/confluence/x/EM4
 
-----------------------------------------------------------
 How to build the source
+---
 
 The normal Roller build creates a product generically suitable for use several
 application containers, however see the Roller Install guide for application server
@@ -36,8 +38,8 @@ To build Roller, subsequently run "mvn clean install" from the assembly-release
 folder.  After that, you'll find Roller distribution files in 
 assembly-release/target. 
 
----------------------------
 NOTES
+---
 
 Building other versions of Roller
 
