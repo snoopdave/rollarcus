@@ -1,6 +1,10 @@
 README.txt
 ===
 
+This is Rollarcus: my experimentatal fork of Apache Roller.
+
+This branch __shiro_not_spring__ replaces Spring Security with Apache Shiro and completely removes Spring from Roller.
+
 This file exists at the top-level of the Roller source tree.
 
 Roller is made up of the following Maven projects:
