@@ -33,7 +33,6 @@ import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.pojos.User;
-import org.apache.roller.weblogger.ui.core.security.AutoProvision;
 
 
 /**
@@ -94,18 +93,19 @@ public class RollerSession
                     
                     // try one time to auto-provision, only happens if user==null
                     // which means installation has LDAP enabled in security.xml
-                    if (user == null && WebloggerConfig.getBooleanProperty("users.ldap.autoProvision.enabled")) {
-                        
-                        // provisioning enabled, get provisioner and execute
-                        AutoProvision provisioner = RollerContext.getAutoProvision();
-                        if(provisioner != null) {
-                            boolean userProvisioned = provisioner.execute(request);
-                            if (userProvisioned) {
-                                // try lookup again real quick
-                                user = umgr.getUserByUserName(principal.getName());
-                            }
-                        }
-                    }
+//                    if (user == null && WebloggerConfig.getBooleanProperty("users.ldap.autoProvision.enabled")) {
+//                        
+//                        // provisioning enabled, get provisioner and execute
+//                        AutoProvision provisioner = RollerContext.getAutoProvision();
+//                        if(provisioner != null) {
+//                            boolean userProvisioned = provisioner.execute(request);
+//                            if (userProvisioned) {
+//                                // try lookup again real quick
+//                                user = umgr.getUserByUserName(principal.getName());
+//                            }
+//                        }
+//                    }
+
                     // only set authenticated user if user is enabled
                     if (user != null && user.getEnabled()) {
                         rollerSession.setAuthenticatedUser(user);

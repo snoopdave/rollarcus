@@ -22,8 +22,6 @@ package org.apache.roller.weblogger.ui.rendering.util.mobile;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.context.request.RequestAttributes;
-
 /**
  * Static helper for accessing request-scoped Device values.
  * 
@@ -80,9 +78,9 @@ public class DeviceUtils {
 	 * @return the current device, or null if no device has been resolved for
 	 *         the request
 	 */
-	public static Device getCurrentDevice(RequestAttributes attributes) {
-		return (Device) attributes.getAttribute(CURRENT_DEVICE_ATTRIBUTE,
-				RequestAttributes.SCOPE_REQUEST);
-	}
+//	public static Device getCurrentDevice(RequestAttributes attributes) {
+//		return (Device) attributes.getAttribute(CURRENT_DEVICE_ATTRIBUTE,
+//				RequestAttributes.SCOPE_REQUEST);
+//	}
 
 }

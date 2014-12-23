@@ -12,9 +12,9 @@
         <maven>3.0.5</maven>
     </prerequisites>
 
-    <name>Roller</name>
+    <name>Rollarcus</name>
     <description>
-        Roller is an open source blog server built with open source Java
+        Rollarcus is an open source blog server built with open source Java
         libraries including Struts2, Velocity, ROME and Guice.
     </description>
     <url>http://roller.apache.org</url>

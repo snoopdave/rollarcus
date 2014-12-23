@@ -30,7 +30,7 @@ boolean cmaEnabled = "CMA".equals(WebloggerConfig.getAuthMethod());
 if (cmaEnabled) {
     securityCheckUrl = "/j_security_check";
 } else {
-    securityCheckUrl = "/roller_j_security_check";
+    securityCheckUrl = ""; // shiro wants us to post the the login URL
 }
 %>
 
@@ -78,14 +78,14 @@ if (cmaEnabled) {
             <tr>
                 <td width="20%" align="right"><s:text name="loginPage.userName" /></td>
                 <td width="80%">
-                    <input type="text" name="j_username" id="j_username" size="25" />
+                    <input type="text" name="username" id="username" size="25" />
                 </td>
             </tr>
 
             <tr>
                 <td width="20%" align="right"><s:text name="loginPage.password" /></td>
                 <td width="80%">
-                    <input type="password" name="j_password" id="j_password" size="20" />
+                    <input type="password" name="password" id="password" size="20" />
                 </td>
             </tr>
 
@@ -106,7 +106,7 @@ if (cmaEnabled) {
                 <td width="80%">
                     <input type="submit" name="login" id="login" value="<s:text name='loginPage.login' />" />
                     <input type="reset" name="reset" id="reset" value="<s:text name='loginPage.reset' />"
-                        onclick="document.getElementById('j_username').focus()" />
+                        onclick="document.getElementById('username').focus()" />
                 </td>
             </tr>        
 

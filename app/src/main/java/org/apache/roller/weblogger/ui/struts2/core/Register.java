@@ -34,7 +34,6 @@ import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.ui.core.RollerSession;
-import org.apache.roller.weblogger.ui.core.security.CustomUserRegistry;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
 import org.apache.roller.weblogger.util.MailUtil;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -106,59 +105,28 @@ public class Register extends UIAction implements ServletRequestAware {
         // For new user default to timezone of server
         bean.setTimeZone(TimeZone.getDefault().getID());
         
-        /* TODO: when Spring Security 2.1 is release comment out this stuff, 
-         * which pre-populates the user bean with info from OpenID provider.
-         *
-        Collection attrsCollect = (Collection)WebloggerFactory.getWeblogger()
-                .getUserManager().userAttributes.get(UserAttribute.Attributes.openidUrl.toString());
-        
-        if (attrsCollect != null) {
-            ArrayList attrs = new ArrayList(attrsCollect);
-            for (OpenIDUserAttribute attr : attrs) {
-                if (attr.getName().equals(OpenIDUserAttribute.Attributes.country.toString())) {
-                    getBean().setLocale(UIUtils.getLocale(attr.getValue()));
-                }                
-               if (attr.getName().equals(OpenIDUserAttribute.Attributes.email.toString())) {
-                    getBean().setEmailAddress(attr.getValue());
-                }
-                if (attr.getName().equals(OpenIDUserAttribute.Attributes.fullname.toString())) {
-                    getBean().setFullName(attr.getValue());
-                }
-                if (attr.getName().equals(OpenIDUserAttribute.Attributes.nickname.toString())) {
-                    getBean().setUserName(attr.getValue());
-                }
-                if (attr.getName().equals(OpenIDUserAttribute.Attributes.timezone.toString())) {
-                    getBean().setTimeZone(UIUtils.getTimeZone(attr.getValue()));
-                }
-                if (attr.getName().equals(OpenIDUserAttribute.Attributes.openidname.toString())) {
-                    getBean().setOpenidUrl(attr.getValue());
-                }
-                
-            }
-        }*/
-            
-        try {
-
-            if (WebloggerConfig.getAuthMethod() == AuthMethod.LDAP) {
-                // See if user is already logged in via Spring Security
-                User fromSSOUser = CustomUserRegistry.getUserDetailsFromAuthentication(getServletRequest());
-                if (fromSSOUser != null) {
-                    // Copy user details from Spring Security, including LDAP attributes
-                    getBean().copyFrom(fromSSOUser);
-                }
-            } else if (WebloggerConfig.getAuthMethod() == AuthMethod.CMA) {
-                // See if user is already logged in via CMA
-                if (getServletRequest().getUserPrincipal() != null) {
-                    // Only detail we get is username, sadly no LDAP attributes
-                    getBean().setUserName(getServletRequest().getUserPrincipal().getName());
-                    getBean().setScreenName(getServletRequest().getUserPrincipal().getName());
-                }
-            }
-            
-        } catch (Exception ex) {
-            log.error("Error reading SSO user data", ex);
-            addError("error.editing.user", ex.toString());
-        }
+//        try {
+//
+//            if (WebloggerConfig.getAuthMethod() == AuthMethod.LDAP) {
+//                // See if user is already logged in via Spring Security
+//                User fromSSOUser = CustomUserRegistry.getUserDetailsFromAuthentication(getServletRequest());
+//                if (fromSSOUser != null) {
+//                    // Copy user details from Spring Security, including LDAP attributes
+//                    getBean().copyFrom(fromSSOUser);
+//                }
+//            } else if (WebloggerConfig.getAuthMethod() == AuthMethod.CMA) {
+//                // See if user is already logged in via CMA
+//                if (getServletRequest().getUserPrincipal() != null) {
+//                    // Only detail we get is username, sadly no LDAP attributes
+//                    getBean().setUserName(getServletRequest().getUserPrincipal().getName());
+//                    getBean().setScreenName(getServletRequest().getUserPrincipal().getName());
+//                }
+//            }
+//            
+//        } catch (Exception ex) {
+//            log.error("Error reading SSO user data", ex);
+//            addError("error.editing.user", ex.toString());
+//        }
         
         return INPUT;
     }
@@ -329,15 +297,15 @@ public class Register extends UIAction implements ServletRequestAware {
             String unusedPassword = WebloggerConfig.getProperty("users.passwords.externalAuthValue", "<externalAuth>");
             
             // Preserve username and password, Spring Security case
-            User fromSSOUser = CustomUserRegistry.getUserDetailsFromAuthentication(getServletRequest());
-            if (fromSSOUser != null) {
-                getBean().setPasswordText(unusedPassword);
-                getBean().setPasswordConfirm(unusedPassword);
-                getBean().setUserName(fromSSOUser.getUserName());
-            }
+//            User fromSSOUser = CustomUserRegistry.getUserDetailsFromAuthentication(getServletRequest());
+//            if (fromSSOUser != null) {
+//                getBean().setPasswordText(unusedPassword);
+//                getBean().setPasswordConfirm(unusedPassword);
+//                getBean().setUserName(fromSSOUser.getUserName());
+//            }
 
             // Preserve username and password, CMA case             
-            else if (getServletRequest().getUserPrincipal() != null) {
+            if (getServletRequest().getUserPrincipal() != null) {
                 getBean().setUserName(getServletRequest().getUserPrincipal().getName());
                 getBean().setPasswordText(unusedPassword);
                 getBean().setPasswordConfirm(unusedPassword);

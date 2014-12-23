@@ -16,18 +16,18 @@
         <param-value>ApplicationResources</param-value>
     </context-param>
 
+    <listener>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+    </listener>
+
     <filter>
-        <filter-name>struts2</filter-name>
-        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
     </filter>
 
     <filter>
-        <filter-name>securityFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-            <param-name>targetBeanName</param-name>
-            <param-value>springSecurityFilterChain</param-value>
-        </init-param>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
     </filter>
 
     <filter>
@@ -104,19 +104,12 @@
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
-    <!-- Scheme enforcement.  Only here until we get Spring Security scheme enforcement working -->
     <filter-mapping>
-        <filter-name>SchemeEnforcementFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
-
-    <!-- Spring Security filters - controls secure access to different parts of Roller -->
-    <filter-mapping>
-        <filter-name>securityFilter</filter-name>
+        <filter-name>ShiroFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>
     </filter-mapping>
 
     <filter-mapping>

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /*
  * Code from Spring Mobile and modified for use in Apache Roller
  * https://github.com/spring-projects/spring-mobile 11 Feb 2014
@@ -22,9 +23,12 @@
 package org.apache.roller.weblogger.ui.rendering.filters;
 
 import java.io.IOException;
+import javax.servlet.Filter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,7 +36,7 @@ import org.apache.roller.weblogger.ui.rendering.util.mobile.Device;
 import org.apache.roller.weblogger.ui.rendering.util.mobile.DeviceResolver;
 import org.apache.roller.weblogger.ui.rendering.util.mobile.DeviceUtils;
 import org.apache.roller.weblogger.ui.rendering.util.mobile.LiteDeviceResolver;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.apache.shiro.web.servlet.OncePerRequestFilter;
 
 /**
  * A Servlet 2.3 Filter that resolves the Device that originated the web
@@ -76,17 +80,13 @@ public class DeviceResolverRequestFilter extends OncePerRequestFilter {
         this.deviceResolver = deviceResolver;
     }
 
-    /**
-     * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
-     *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
-     */
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        Device device = deviceResolver.resolveDevice(request);
+    protected void doFilterInternal( ServletRequest request, ServletResponse response, 
+            FilterChain chain) throws ServletException, IOException {
+
+        Device device = deviceResolver.resolveDevice((HttpServletRequest)request);
         request.setAttribute(DeviceUtils.CURRENT_DEVICE_ATTRIBUTE, device);
-        filterChain.doFilter(request, response);
+        chain.doFilter(request, response);
     }
 
 }

@@ -30,7 +30,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.springframework.util.StringUtils;
+import org.apache.roller.weblogger.util.Utilities;
 
 /**
  * Requires the commenter to authenticate to a central LDAP server.  Here are the roller.properties that need to 
@@ -154,7 +154,7 @@ public class LdapCommentAuthenticator implements CommentAuthenticator {
 	 */
 	private String getQualifedDc(String ldapDc, String ldapOu, String ldapUser) {
 		String qualifedDc = "";
-		for (String token : StringUtils.delimitedListToStringArray(ldapDc, ",")) {
+		for (String token : Utilities.stringToStringArray(ldapDc, ",")) {
 			if (!qualifedDc.isEmpty()) {
 				qualifedDc += ",";
 			}

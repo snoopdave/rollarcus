@@ -11,14 +11,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <name>Roller webapp</name>
+    <name>Rollarcus webapp</name>
     <artifactId>roller-webapp</artifactId>
     <packaging>war</packaging>
 
     <properties>
         <lucene.version>4.10.0</lucene.version>
-        <spring.version>4.1.0.RELEASE</spring.version>
-        <spring.security.version>3.2.5.RELEASE</spring.security.version>
     </properties>
 
     <dependencies>
@@ -187,71 +185,35 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- spring deps -->
-
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>aopalliance</groupId>
-                    <artifactId>aopalliance</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>${spring.security.version}</version>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-guice</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-ldap</artifactId>
-            <version>${spring.security.version}</version>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-ehcache</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-openid</artifactId>
-            <version>${spring.security.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.security.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-web</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-acl</artifactId>
-            <version>${spring.security.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-jdbc</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!-- struts deps -->
 
         <dependency>
             <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-spring-plugin</artifactId>
+            <artifactId>struts2-core</artifactId>
             <version>2.3.16.3</version>
         </dependency>
 
@@ -540,6 +502,16 @@
                         </goals>
                         <configuration>
                             <target>
+                              
+                                <!-- TODO: why do we need these mkdirs now? -->  
+                                <mkdir dir="${basedir}/target/dbscripts/db2"/>
+                                <mkdir dir="${basedir}/target/dbscripts/derby"/>
+                                <mkdir dir="${basedir}/target/dbscripts/hsqldb"/>
+                                <mkdir dir="${basedir}/target/dbscripts/mssql"/>
+                                <mkdir dir="${basedir}/target/dbscripts/mysql"/>
+                                <mkdir dir="${basedir}/target/dbscripts/oracle"/>
+                                <mkdir dir="${basedir}/target/dbscripts/postgresql"/>
+
                                 <taskdef name="texen"
                                          classname="org.apache.velocity.texen.ant.TexenTask"
                                          classpathref="maven.compile.classpath"/>
@@ -549,6 +521,7 @@
                                     templatePath     ="${basedir}/src/main/resources/sql"
                                     outputDirectory  ="${basedir}/target/dbscripts"
                                     outputFile       ="README.txt"/>
+
                             </target>
                         </configuration>
                     </execution>
