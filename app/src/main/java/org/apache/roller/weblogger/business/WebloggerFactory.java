@@ -76,7 +76,8 @@ public final class WebloggerFactory {
         
         // if the app hasn't been properly started so far then bail
         if (!WebloggerStartup.isPrepared()) {
-            throw new IllegalStateException("Cannot bootstrap until application has been properly prepared");
+            throw new IllegalStateException(
+                    "Cannot bootstrap until application has been properly prepared");
         }
         
         // lookup our default provider and instantiate it
@@ -87,10 +88,12 @@ public final class WebloggerFactory {
                 Class providerClass = Class.forName(providerClassname);
                 defaultProvider = (WebloggerProvider) providerClass.newInstance();
             } catch (Exception ex) {
-                throw new BootstrapException("Error instantiating default provider: " + providerClassname + "; exception message: " + ex.getMessage(), ex);
+                throw new BootstrapException("Error instantiating default provider: " 
+                        + providerClassname + "; exception message: " + ex.getMessage(), ex);
             }
         } else {
-            throw new NullPointerException("No provider specified in config property 'weblogger.provider.class'");
+            throw new NullPointerException(
+                    "No provider specified in config property 'weblogger.provider.class'");
         }
 
         // now just bootstrap using our default provider
@@ -114,7 +117,8 @@ public final class WebloggerFactory {
         
         // if the app hasn't been properly started so far then bail
         if (!WebloggerStartup.isPrepared()) {
-            throw new IllegalStateException("Cannot bootstrap until application has been properly prepared");
+            throw new IllegalStateException(
+                    "Cannot bootstrap until application has been properly prepared");
         }
         
         if (provider == null) {

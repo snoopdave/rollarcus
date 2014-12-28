@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
 
     <display-name>Roller Weblogger</display-name>
 
@@ -175,6 +175,32 @@
 
 
     <!-- Servlet Definitions -->
+
+    <!-- 
+    This is where to look for CXF JAX-RS configuration:
+    http://cxf.apache.org/docs/jaxrs-services-configuration.html
+    -->
+    <servlet>
+        <servlet-name>CXFServlet</servlet-name>
+        <servlet-class>
+            org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+        <init-param>
+			<param-name>jaxrs.serviceClasses</param-name>
+			<param-value>
+                org.apache.roller.weblogger.rest.LoginEndpoint,
+                org.apache.roller.weblogger.rest.WeblogsEndpoint
+            </param-value>
+		</init-param>
+         <init-param>
+            <param-name>jaxrs.providers</param-name>
+            <param-value>
+                org.apache.roller.weblogger.rest.RollerContainerRequestFilter
+            </param-value>
+        </init-param>
+    </servlet>
+
     <servlet>
         <servlet-name>PageServlet</servlet-name>
         <servlet-class>org.apache.roller.weblogger.ui.rendering.servlets.PageServlet</servlet-class>
@@ -404,6 +430,12 @@
     </servlet-mapping>
 
     <!-- Web Service Servlets -->
+
+    <servlet-mapping>
+        <servlet-name>CXFServlet</servlet-name>
+        <url-pattern>/roller-services/rest/*</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>XmlRpcServlet</servlet-name>
         <url-pattern>/roller-services/xmlrpc</url-pattern>

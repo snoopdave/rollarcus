@@ -17,7 +17,20 @@
 
     <properties>
         <lucene.version>4.10.0</lucene.version>
+        <jetty.version>9.2.6.v20141205</jetty.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.1.5.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
@@ -102,6 +115,8 @@
             <version>1.7</version>
         </dependency>
 
+        <!-- RSS, Atom and XML-RPC deps -->
+
         <dependency>
             <groupId>org.apache.xmlrpc</groupId>
             <artifactId>xmlrpc-common</artifactId>
@@ -145,15 +160,6 @@
             <version>20100527</version>
         </dependency>
 
-        <!-- web -->
-
-        <dependency>
-	        <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome-fetcher</artifactId>
@@ -184,6 +190,8 @@
             <version>1.7.7</version>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- Authentication deps -->
 
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -232,7 +240,14 @@
         <!-- Java EE deps -->
 
         <dependency>
-            <groupId>javax.servlet</groupId>
+	        <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+	        <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>1.2</version>
         </dependency>
@@ -257,22 +272,51 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- JAX-RS deps -->
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-base</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-json-provider</artifactId>
+            <version>2.4.4</version>
+        </dependency>
+
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
             <version>1.4.0</version>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
+
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.2</version>
         </dependency>
+
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
@@ -280,6 +324,38 @@
         </dependency>
 
         <!-- test deps -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <version>3.0.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.shrinkwrap.resolver</groupId>
+            <artifactId>shrinkwrap-resolver-depchain</artifactId>
+            <scope>test</scope>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.derby</groupId>
@@ -302,11 +378,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -318,40 +389,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.5</version>
                 <configuration>
                     <attachClasses>true</attachClasses>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <configuration>
-                    <webApp>
-                        <contextPath>/roller</contextPath>
-                    </webApp>
-                    <jettyXml>src/test/resources/jetty.xml</jettyXml>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>roller.custom.config</name>
-                            <value>${project.build.directory}/test-classes/roller-jettyrun.properties</value>
-                        </systemProperty>
-                    </systemProperties>
-                </configuration>
-                <dependencies>
-                    <!-- Dependencies needed when using mvn jetty:run, not mvn test -->
-                    <dependency>
-                        <groupId>org.apache.derby</groupId>
-                        <artifactId>derby</artifactId>
-                        <version>${derby.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.derby</groupId>
-                        <artifactId>derbyclient</artifactId>
-                        <version>${derby.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <!-- Allow for standalone Tomcat deployment
@@ -359,7 +400,7 @@
                  http://www.jroller.com/gmazza/entry/web_service_tutorial#maventomcat
                  for necessary config info)
             -->
-            <plugin>
+<!--            <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.1</version>
@@ -367,7 +408,7 @@
                     <server>myTomcat</server>
                     <path>/${project.build.finalName}</path>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <!-- Activates the Derby database for unit tests and mvn jetty:run -->
             <plugin>
@@ -396,7 +437,7 @@
                     </execution>
                     <execution>
                         <id>stop</id>
-                        <phase>package</phase>
+                        <phase>post-integration-test</phase>
                         <goals>
                             <goal>stop</goal>
                         </goals>
@@ -417,7 +458,9 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <outputDirectory>
+                                ${basedir}/target/classes
+                            </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/main/resources</directory>
@@ -435,10 +478,14 @@
                         </goals>
                         <configuration>
                             <includeEmptyDirs>true</includeEmptyDirs>
-                            <outputDirectory>${basedir}/target/dbscripts</outputDirectory>
+                            <outputDirectory>
+                                ${basedir}/target/dbscripts
+                            </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/main/resources/sql</directory>
+                                    <directory>
+                                        ${basedir}/src/main/resources/sql
+                                    </directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
@@ -452,7 +499,9 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/roller/WEB-INF/classes/dbscripts</outputDirectory>
+                            <outputDirectory>
+                                ${project.build.directory}/roller/WEB-INF/classes/dbscripts
+                            </outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>target/dbscripts</directory>
@@ -483,10 +532,55 @@
                             <value>${basedir}/target</value>
                         </property>
                     </systemProperties>
-                    <!--excludes>
-                        <exclude>**/??.java</exclude>
-                    </excludes-->
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+
+                    <!-- 
+                    Exclude some dependencies because Maven classpath seems to 
+                    leak into the Tomcat instance that is started by Arquillian 
+                    and that cause problems serious enough that Roller will 
+                    fail to deploy for the failsafe integration tests.
+                    -->
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExcludes>
+                            org.apache.struts:struts2-core
+                        </classpathDependencyExcludes>
+                    </classpathDependencyExcludes>
+
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.18</version>
+                <configuration>
+                    <includes>
+                        <include>**/*IT.java</include>
+                    </includes>
+
+                    <!-- 
+                    Exclude some dependencies because Maven classpath seems to 
+                    leak into the Tomcat instance that is started by Arquillian 
+                    and that cause problems serious enough that Roller will 
+                    fail to deploy for the failsafe integration tests.
+                    -->
+                    <classpathDependencyExcludes>
+                        <classpathDependencyExcludes>
+                            org.apache.struts:struts2-core
+                        </classpathDependencyExcludes>
+                    </classpathDependencyExcludes>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -587,5 +681,42 @@
         </resources>
 
     </build>
+
+    <profiles>
+
+        <profile>
+            <id>arquillian-tomcat</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-tomcat-embedded-7</artifactId>
+                    <version>1.0.0.CR7</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                    <artifactId>tomcat-embed-core</artifactId>
+                    <version>7.0.57</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                    <artifactId>tomcat-embed-jasper</artifactId>
+                    <version>7.0.57</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                    <artifactId>tomcat-embed-logging-juli</artifactId>
+                    <version>7.0.57</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+    </profiles>
 
 </project>

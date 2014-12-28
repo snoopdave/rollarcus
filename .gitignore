@@ -1,3 +1,7 @@
 /app/target/
 /velocity.log
 /app/velocity.log
+/target/
+/app/roller-webapp.iml
+/.idea/
+/roller-project.iml

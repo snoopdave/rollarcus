@@ -3,7 +3,7 @@ README.txt
 
 This is Rollarcus: my experimentatal fork of Apache Roller.
 
-This branch __shiro_not_spring__ replaces Spring Security with Apache Shiro and completely removes Spring from Roller.
+This branch __jaxrs_not_struts__ adds a REST API to Roller, authentication by Shiro and REST API testing via Arquillian and Embedded Tomcat.
 
 This file exists at the top-level of the Roller source tree.
 

@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.startup.StartupException;
+import org.apache.roller.weblogger.business.startup.WebloggerStartup;
 import org.apache.roller.weblogger.config.WebloggerConfig;
 
 
@@ -62,7 +64,16 @@ public class BootstrapFilter implements Filter {
             RequestDispatcher rd = context.getRequestDispatcher(
                 "/roller-ui/install/install.rol");
             rd.forward(req, res);
-            
+           
+        } else if ("unassisted".equals(WebloggerConfig.getProperty("installation.type"))
+                && !WebloggerFactory.isBootstrapped() ) {
+
+            try {
+                WebloggerStartup.createDatabase();
+            } catch (StartupException ex) {
+                throw new RuntimeException("Cannot create database unassisted", ex);
+            }
+
         } else {
             chain.doFilter(request, response);
         }
