@@ -19,7 +19,6 @@ package org.apache.roller.weblogger;
 
 import com.google.inject.Binder;
 import com.google.inject.Module;
-import org.apache.roller.weblogger.auth.ShiroGuiceModule;
 import org.apache.roller.weblogger.business.jpa.JPAWebloggerModule;
 
 
@@ -29,8 +28,6 @@ public class GuiceModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.install( new JPAWebloggerModule() );
-        //binder.install( new ShiroGuiceModule() );
-        //binder.install( new ShiroAopGuiceModule() );
     }
     
 }
