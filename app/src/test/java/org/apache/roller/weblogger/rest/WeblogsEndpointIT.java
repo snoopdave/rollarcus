@@ -28,6 +28,7 @@ import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
+import org.apache.ws.commons.util.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -77,7 +78,6 @@ public class WeblogsEndpointIT extends TestCase {
 
             Weblog weblog = TestUtils.setupWeblog("testblog", dave);
 
-
             PropertiesManager mgr = WebloggerFactory.getWeblogger().getPropertiesManager();
             RuntimeConfigProperty frontpageProp = mgr.getProperty("site.frontpage.weblog.handle");
             frontpageProp.setValue(weblog.getHandle());
@@ -97,14 +97,17 @@ public class WeblogsEndpointIT extends TestCase {
     public void testSimpleGet() throws Exception {
 
         String baseUrl = webappUrl.toString(); 
+
         WebClient client = WebClient.create( baseUrl );
         client = client.path("/");
         String response = client.get(String.class);
-        Assert.assertEquals(226, response.indexOf("Front Page: Welcome to Roller!"));
+        Assert.assertNotEquals(-1, response.indexOf("Front Page: Welcome to Roller!"));
 
-        client = WebClient.create("http://localhost:8080");
+        client = WebClient.create( baseUrl );
+        String creds = "dave:password";
+        byte[] credbytes = creds.getBytes("UTF-8");
         client = client.path("/roller/roller-services/rest/weblogs")
-                    .header("Authorization", "Basic dave:password");
+                .header("Authorization", "Basic " + Base64.encode(credbytes).trim());
         response = client.get(String.class);
         Assert.assertEquals("OK", response);
     }

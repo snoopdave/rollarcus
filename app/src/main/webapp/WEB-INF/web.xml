@@ -196,7 +196,7 @@
          <init-param>
             <param-name>jaxrs.providers</param-name>
             <param-value>
-                org.apache.roller.weblogger.rest.RollerContainerRequestFilter
+                org.apache.roller.weblogger.rest.auth.RollerContainerRequestFilter
             </param-value>
         </init-param>
     </servlet>
