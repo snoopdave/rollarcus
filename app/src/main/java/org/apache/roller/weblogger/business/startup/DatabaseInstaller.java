@@ -65,17 +65,22 @@ public class DatabaseInstaller {
     
     
     /** 
-     * Determine if database schema needs to be upgraded.
+     * Determine if database schema needs to be created.
      */
     public boolean isCreationRequired() {
         Connection con = null;
         try {            
             con = db.getConnection();
-            
-            // just check for a couple key Roller tables
-            // roller_user table called rolleruser before Roller 5.1
-            if (tableExists(con, "userrole") && (tableExists(con, "roller_user") || tableExists(con, "rolleruser"))) {
-                return false;
+         
+            // during testing may need to wait a bit before tables are created
+            boolean ready = false;
+            int count = 0;
+            while ( !ready && count++ < 10 ) {
+                // look for table close to end of creation script
+                if (tableExists(con, "roller_mediafiledir")) { 
+                    return false;
+                }
+                Thread.sleep(200);
             }
             
         } catch (Exception e) {
@@ -562,35 +567,35 @@ public class DatabaseInstaller {
             
             // need to start by looking up absolute site url
             PreparedStatement selectAbsUrl = 
-                    con.prepareStatement("select value from roller_properties where name = 'site.absoluteurl'");
+                con.prepareStatement("select value from roller_properties where name = 'site.absoluteurl'");
             String absUrl = null;
             ResultSet rs = selectAbsUrl.executeQuery();
             if(rs.next()) {
                 absUrl = rs.getString(1);
             }
             
-            if(absUrl != null && absUrl.length() > 0) {
-                PreparedStatement selectSubs = 
-                        con.prepareStatement("select id,feed_url,author from rag_subscription");
-            
-            PreparedStatement updateSubUrl = 
-                    con.prepareStatement("update rag_subscription set last_updated=last_updated, feed_url = ? where id = ?");
-            
-            ResultSet rset = selectSubs.executeQuery();
-            while (rset.next()) {
-                String id = rset.getString(1);
-                String feed_url = rset.getString(2);
-                String handle = rset.getString(3);
-                
-                // only work on local feed urls
-                if (feed_url.startsWith(absUrl)) {
-                    // update feed_url to 'weblogger:<handle>'
-                    updateSubUrl.clearParameters();
-                    updateSubUrl.setString( 1, "weblogger:"+handle);
-                    updateSubUrl.setString( 2, id);
-                    updateSubUrl.executeUpdate();
+            if (absUrl != null && absUrl.length() > 0) {
+                PreparedStatement selectSubs = con.prepareStatement(
+                    "select id,feed_url,author from rag_subscription");
+
+                PreparedStatement updateSubUrl = con.prepareStatement(
+                    "update rag_subscription set last_updated=last_updated, feed_url = ? where id = ?");
+
+                ResultSet rset = selectSubs.executeQuery();
+                while (rset.next()) {
+                    String id = rset.getString(1);
+                    String feed_url = rset.getString(2);
+                    String handle = rset.getString(3);
+
+                    // only work on local feed urls
+                    if (feed_url.startsWith(absUrl)) {
+                        // update feed_url to 'weblogger:<handle>'
+                        updateSubUrl.clearParameters();
+                        updateSubUrl.setString(1, "weblogger:" + handle);
+                        updateSubUrl.setString(2, id);
+                        updateSubUrl.executeUpdate();
+                    }
                 }
-            }
             }
             
             if (!con.getAutoCommit()) {
@@ -637,7 +642,8 @@ public class DatabaseInstaller {
             }
             
             // first lets set the new 'users.comments.htmlenabled' property
-            PreparedStatement addCommentHtmlProp = con.prepareStatement("insert into roller_properties(name,value) values(?,?)");
+            PreparedStatement addCommentHtmlProp = con.prepareStatement(
+                    "insert into roller_properties(name,value) values(?,?)");
             addCommentHtmlProp.clearParameters();
             addCommentHtmlProp.setString(1, "users.comments.htmlenabled");
             if(htmlEnabled) {
@@ -807,9 +813,9 @@ public class DatabaseInstaller {
             
             // just check in the roller_properties table
             ResultSet rs = stmt.executeQuery(
-                    "select value from roller_properties where name = '"+DBVERSION_PROP+"'");
+                "select value from roller_properties where name = '"+DBVERSION_PROP+"'");
             
-            if(rs.next()) {
+            if (rs.next()) {
                 dbversion = Integer.parseInt(rs.getString(1));
                 
             } else {
@@ -818,13 +824,16 @@ public class DatabaseInstaller {
                 // we have someone upgrading from 1.2.x
                 rs = stmt.executeQuery("select count(*) from roller_properties");
                 if (rs.next() && rs.getInt(1) > 0) {
+                    log.warn("No database version number is present but roller_properties "
+                            + "is not empty so we assume version 120, count=" + rs.getInt(1));
                     dbversion = 120;
                 }
             }
             
         } catch(Exception e) {
             // that's strange ... hopefully we didn't need to upgrade
-            log.error("Couldn't lookup current database version", e);           
+            log.error("Couldn't lookup current database version", e);   
+
         } finally {
             try {
                 if (con != null) {
@@ -886,7 +895,7 @@ public class DatabaseInstaller {
             
             log.debug("Set database verstion to "+version);
         } catch(SQLException se) {
-            throw new StartupException("Error setting database version.", se);
+            throw new StartupException("Error setting database version to " + version, se);
         }
     }
     
@@ -904,8 +913,9 @@ public class DatabaseInstaller {
                     "where name = '"+DBVERSION_PROP+"'");
             
             log.debug("Updated database verstion to "+version);
+
         } catch(SQLException se) {
-            throw new StartupException("Error setting database version.", se);
+            throw new StartupException("Error updating database version to " + version, se);
         } 
     }
 

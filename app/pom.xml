@@ -543,6 +543,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.18</version>
                 <configuration>
+                    <argLine>-Xmx3001m</argLine>
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>

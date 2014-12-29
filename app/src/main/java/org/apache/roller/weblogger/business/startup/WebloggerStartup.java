@@ -181,7 +181,7 @@ public final class WebloggerStartup {
         }
         
         // now we need to deal with database install/upgrade logic
-        if("manual".equals(WebloggerConfig.getProperty("installation.type"))) {
+        if ("manual".equals(WebloggerConfig.getProperty("installation.type"))) {
             
             // if we are doing manual install then all that is needed is the
             // app handled database upgrade work, not the db scripts
@@ -192,16 +192,39 @@ public final class WebloggerStartup {
             
             prepared = true;
             
+
         } else {
             
             // we are in auto install mode, so see if there is any work to do
             DatabaseInstaller dbInstaller = getDatabaseInstaller();
-            if (!dbInstaller.isCreationRequired() &&
-                    !dbInstaller.isUpgradeRequired()) {
+
+            if (!dbInstaller.isCreationRequired() && !dbInstaller.isUpgradeRequired()) {
                 prepared = true;
+
+            } else if (dbInstaller.isCreationRequired() 
+                && "unassisted".equals(WebloggerConfig.getProperty("installation.type"))) {
+               
+                try {
+                    WebloggerStartup.createDatabase();
+                    prepared = true;
+
+                } catch (StartupException ex) {
+                    throw new RuntimeException("Error creating database unassisted", ex);
+                }
+
+            } else if (dbInstaller.isUpgradeRequired()
+                && "unassisted".equals(WebloggerConfig.getProperty("installation.type"))) {
+               
+                try {
+                    dbInstaller.upgradeDatabase(true);
+                    prepared = true;
+
+                } catch (StartupException ex) {
+                    throw new RuntimeException("Error upgrading database unassisted", ex);
+                }
             }
         }
-        
+
     }
-    
+
 }

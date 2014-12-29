@@ -65,14 +65,14 @@ public class BootstrapFilter implements Filter {
                 "/roller-ui/install/install.rol");
             rd.forward(req, res);
            
-        } else if ("unassisted".equals(WebloggerConfig.getProperty("installation.type"))
-                && !WebloggerFactory.isBootstrapped() ) {
-
-            try {
-                WebloggerStartup.createDatabase();
-            } catch (StartupException ex) {
-                throw new RuntimeException("Cannot create database unassisted", ex);
-            }
+//        } else if ("unassisted".equals(WebloggerConfig.getProperty("installation.type"))
+//                && !WebloggerFactory.isBootstrapped() ) {
+//
+//            try {
+//                WebloggerStartup.createDatabase();
+//            } catch (StartupException ex) {
+//                throw new RuntimeException("Cannot create database unassisted", ex);
+//            }
 
         } else {
             chain.doFilter(request, response);

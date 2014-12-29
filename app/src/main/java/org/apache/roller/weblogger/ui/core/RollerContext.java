@@ -160,10 +160,19 @@ public class RollerContext implements ServletContextListener {
     /** 
      * Responds to app-destroy event and triggers shutdown sequence.
      */
-    public void contextDestroyed(ServletContextEvent sce) {        
-        WebloggerFactory.getWeblogger().shutdown();        
-        // do we need a more generic mechanism for presentation layer shutdown?
-        CacheManager.shutdown();
+    public void contextDestroyed(ServletContextEvent sce) {      
+        try {
+            WebloggerFactory.getWeblogger().shutdown();        
+            // do we need a more generic mechanism for presentation layer shutdown?
+            CacheManager.shutdown();
+
+        } catch ( Throwable t ) {
+            if ( log.isDebugEnabled() ) { 
+                log.debug("Error during Roller shutdown", t);
+            } else {
+                log.warn("Error during Roller shutdown message is: " + t.getMessage() );
+            }
+        }
     }
     
     
