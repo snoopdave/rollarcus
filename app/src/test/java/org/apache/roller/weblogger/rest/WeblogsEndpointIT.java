@@ -83,12 +83,14 @@ public class WeblogsEndpointIT extends TestCase {
 
         String weblogId;
 
+        User dave = null;
+
         String creds;
 
         try {
             TestUtils.setupWeblogger();
 
-            User dave = TestUtils.setupUser("dave");
+            dave = TestUtils.setupUser("dave");
 
             Weblog weblog = TestUtils.setupWeblog("testblog", dave);
             weblogId = weblog.getId();
@@ -102,7 +104,7 @@ public class WeblogsEndpointIT extends TestCase {
             creds = dave.getUserName() + ":" + dave.getPassword();
 
         } catch (Exception ex) {
-            log.error("Error setting up Roller for test", ex);
+            log.error("Error setting up data for test", ex);
             throw new RuntimeException("Error setting Roller up for test", ex);
         }
 
@@ -123,8 +125,8 @@ public class WeblogsEndpointIT extends TestCase {
             Assert.assertEquals("OK", response);
 
         } finally {
-            TestUtils.teardownUser( "dave" );
-            TestUtils.teardownWeblog(weblogId);
+            TestUtils.teardownUser( dave.getUserName() );
+            TestUtils.teardownWeblog( weblogId );
         }
     }
 }
