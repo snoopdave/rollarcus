@@ -17,15 +17,16 @@
 
 package org.apache.roller.weblogger.rest;
 
-import org.apache.roller.weblogger.rest.auth.RequireWeblogAdmin;
-import org.apache.roller.weblogger.rest.auth.RequireUser;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ import org.apache.roller.weblogger.rest.auth.RequireUser;
+ import org.apache.roller.weblogger.rest.auth.RequireWeblogAdmin;
+
+ import javax.ws.rs.GET;
+ import javax.ws.rs.POST;
+ import javax.ws.rs.PUT;
+ import javax.ws.rs.Path;
+ import javax.ws.rs.core.Response;
 
 
 @Path("/weblogs")
@@ -36,7 +37,7 @@ public class WeblogsEndpoint {
 
     /** Get all weblogs in system. */
     @GET
-    //@RequireGlobalAdmin
+    @RequireUser
     @Path("/")
     public Response getWeblogs() {
 

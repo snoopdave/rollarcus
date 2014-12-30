@@ -18,9 +18,11 @@ package org.apache.roller.weblogger.rest;
 
 import java.io.File;
 import java.net.URL;
+
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.roller.weblogger.TestUtils;
 import org.apache.roller.weblogger.business.PropertiesManager;
@@ -28,26 +30,21 @@ import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
-import org.apache.ws.commons.util.Base64;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
-@RunWith(Arquillian.class)
+
+ @RunWith(Arquillian.class)
 public class WeblogsEndpointIT extends TestCase {
 
     protected static Log log = LogFactory.getFactory().getInstance(WeblogsEndpointIT.class);
-
-    private String WEBROOT_INDEX = "src/main/webapp";
-
-    private int port = 8080;
 
     @ArquillianResource
     private URL webappUrl;
@@ -68,8 +65,25 @@ public class WeblogsEndpointIT extends TestCase {
     }
 
 
-    @Before
-    public void setUp() throws Exception {
+
+    @Test
+    public void testSimpleGet() throws Exception {
+
+        String baseUrl = webappUrl.toString();
+
+        WebClient client = WebClient.create( baseUrl );
+        client = client.path("/");
+        String response = client.get(String.class);
+        Assert.assertNotEquals(-1, response.indexOf("Front Page: Welcome to Roller!"));
+    }
+
+
+    @Test
+    public void testAuthenticatedGet() throws Exception {
+
+        String weblogId;
+
+        String creds;
 
         try {
             TestUtils.setupWeblogger();
@@ -77,7 +91,7 @@ public class WeblogsEndpointIT extends TestCase {
             User dave = TestUtils.setupUser("dave");
 
             Weblog weblog = TestUtils.setupWeblog("testblog", dave);
-
+            weblogId = weblog.getId();
             PropertiesManager mgr = WebloggerFactory.getWeblogger().getPropertiesManager();
             RuntimeConfigProperty frontpageProp = mgr.getProperty("site.frontpage.weblog.handle");
             frontpageProp.setValue(weblog.getHandle());
@@ -85,30 +99,32 @@ public class WeblogsEndpointIT extends TestCase {
 
             TestUtils.endSession(true);
 
+            creds = dave.getUserName() + ":" + dave.getPassword();
+
         } catch (Exception ex) {
             log.error("Error setting up Roller for test", ex);
             throw new RuntimeException("Error setting Roller up for test", ex);
         }
 
-    }
 
+        try {
+            String baseUrl = webappUrl.toString();
 
-    @Test
-    public void testSimpleGet() throws Exception {
+            WebClient client = WebClient.create( baseUrl );
 
-        String baseUrl = webappUrl.toString(); 
+            String authorizationHeader = "Basic " + Base64Utility.encode(creds.getBytes());
 
-        WebClient client = WebClient.create( baseUrl );
-        client = client.path("/");
-        String response = client.get(String.class);
-        Assert.assertNotEquals(-1, response.indexOf("Front Page: Welcome to Roller!"));
+            client = client.path("/roller-services/rest/weblogs/")
+                .header("Authorization", authorizationHeader);
 
-//        client = WebClient.create( baseUrl );
-//        String creds = "dave:password";
-//        byte[] credbytes = creds.getBytes("UTF-8");
-//        client = client.path("/roller/roller-services/rest/weblogs")
-//                .header("Authorization", "Basic " + Base64.encode(credbytes).trim());
-//        response = client.get(String.class);
-//        Assert.assertEquals("OK", response);
+            log.debug("GET " + client.getCurrentURI() + " Authentication: " + authorizationHeader );
+            String response = client.get(String.class);
+
+            Assert.assertEquals("OK", response);
+
+        } finally {
+            TestUtils.teardownUser( "dave" );
+            TestUtils.teardownWeblog(weblogId);
+        }
     }
 }

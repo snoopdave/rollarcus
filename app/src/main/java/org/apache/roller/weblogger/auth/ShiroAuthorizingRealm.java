@@ -64,13 +64,19 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
         User user; 
         try {
             user = loadUserByUsername( token.getUsername() );
+            
         } catch (WebloggerException ex) {
+            log.error("Error looking up user", ex);
             throw new AuthenticationException("Error looking up user " + token.getUsername(), ex);
         }
 
         if (user != null) {
-            return new SimpleAuthenticationInfo( user.getUserName(), user.getPassword(), getName());
+            log.debug("Returning user " + user.getUserName() + " password " + user.getPassword());
+            return new SimpleAuthenticationInfo( 
+                user.getUserName(), new Sha1Hash(user.getPassword()), getName());
+            
         } else {
+            log.error("Username not found: " + token.getUsername());
             throw new AuthenticationException("Username not found: " + token.getUsername());
         }
     }

@@ -23,16 +23,14 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Context; 
 import javax.ws.rs.ext.Provider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.pojos.User;
@@ -59,18 +57,17 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext ctx) throws IOException {
 
+        log.debug("Entering filter() with header Authentication: " 
+            + ctx.getHeaderString("Authorization"));
+
         try {
             Method method = resourceInfo.getResourceMethod();
             Subject subject = SecurityUtils.getSubject();
-            String username = subject.getPrincipal().toString();
-            
-            Weblogger weblogger = WebloggerFactory.getWeblogger();
-            UserManager umgr = weblogger.getUserManager();
-            User user = umgr.getUser(username);
+            log.debug("subject.isAuthenticated(): " + subject.isAuthenticated());
 
+            Weblogger weblogger = WebloggerFactory.getWeblogger();
             Weblog weblog = null;
-            HttpServletRequest request = (HttpServletRequest)ctx.getRequest();
-            String uri = request.getRequestURI();
+            String uri = ctx.getUriInfo().getPath();
             String[] parts = uri.split("/");
             if ( parts[0].equals("weblogs") && parts.length > 1 ) {
                 String weblogHandle = parts[1];
@@ -78,26 +75,28 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
             }
 
             if (method.isAnnotationPresent(RequireGlobalAdmin.class)) {
-                if (!umgr.hasRole("admin", user)) {
+                User user = getAuthenticatedUser( subject );
+                if (!WebloggerFactory.getWeblogger().getUserManager().hasRole("admin", user)) {
                     throw new AccessDeniedException("admin role is required for this resource");
                 }
             }
             if (method.isAnnotationPresent(RequireWeblogAdmin.class)) {
-                checkWeblogPermission(weblog, umgr, user, Collections.singletonList("admin"));
+                User user = getAuthenticatedUser( subject );
+                checkWeblogPermission(weblog, user, Collections.singletonList("admin"));
             }
             if (method.isAnnotationPresent(RequireWeblogAuthor.class)) {
-                checkWeblogPermission(weblog, umgr, user, Collections.singletonList("author"));
+                User user = getAuthenticatedUser( subject );
+                checkWeblogPermission(weblog, user, Collections.singletonList("author"));
             }
             if (method.isAnnotationPresent(RequireWeblogLimited.class)) {
-                checkWeblogPermission(weblog, umgr, user, Collections.singletonList("limited"));
+                User user = getAuthenticatedUser( subject );
+                checkWeblogPermission(weblog, user, Collections.singletonList("limited"));
             }
             if (method.isAnnotationPresent(RequireUser.class)) {
-                if ( !subject.isAuthenticated() ) {
-                    throw new AccessDeniedException("admin role is required for this resource");
-                }
+                getAuthenticatedUser( subject );
             }
             
-            log.info("Filter found method = " + method.getName() 
+            log.debug("Filter found method = " + method.getName() 
                     + " and subject authenticated " + subject.isAuthenticated());
 
         } catch (WebloggerException ex) {
@@ -106,15 +105,29 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
     }
 
 
+    private User getAuthenticatedUser( Subject subject ) throws WebloggerException {
+
+        if ( subject == null || subject.getPrincipal() == null ) {
+            throw new AccessDeniedException("Authenticated user required");
+        }
+        String username = subject.getPrincipal().toString();
+        User user = WebloggerFactory.getWeblogger().getUserManager().getUser(username);
+
+        return user;
+    }
+
+
     private void checkWeblogPermission(
-            Weblog weblog, UserManager umgr, User user, List<String> actions) 
+            Weblog weblog, User user, List<String> actions)
             throws WebloggerException, AccessDeniedException {
 
         if ( weblog == null ) {
             throw new AccessDeniedException("Weblog perm required but no weblog specified");
         }
 
-        if ( !umgr.checkPermission( new WeblogPermission( weblog, actions), user)) {
+        if ( !WebloggerFactory.getWeblogger().getUserManager()
+                .checkPermission(new WeblogPermission(weblog, actions), user)) {
+
             throw new AccessDeniedException(
                     "Admin permission required in weblog "+ weblog.getHandle());
         }
