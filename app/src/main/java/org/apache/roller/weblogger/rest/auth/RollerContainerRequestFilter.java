@@ -96,10 +96,11 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
                 getAuthenticatedUser( subject );
             }
             
-            log.debug("Filter found method = " + method.getName() 
+            log.debug("Filter found method = " + method.getName()
                     + " and subject authenticated " + subject.isAuthenticated());
 
         } catch (WebloggerException ex) {
+            log.error("Error checking roles and permission", ex);
             throw new ServerErrorException("Error checking roles and permission", ex);
         }
     }
@@ -108,10 +109,16 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
     private User getAuthenticatedUser( Subject subject ) throws WebloggerException {
 
         if ( subject == null || subject.getPrincipal() == null ) {
+            log.debug("Access denied: no user specified in request");
             throw new AccessDeniedException("Authenticated user required");
         }
         String username = subject.getPrincipal().toString();
-        User user = WebloggerFactory.getWeblogger().getUserManager().getUser(username);
+        User user = WebloggerFactory.getWeblogger().getUserManager().getUserByUserName(username);
+
+        if ( user == null ) {
+            log.debug("Access denied: user not found: " + username);
+            throw new AccessDeniedException("User not found: " + username);
+        }
 
         return user;
     }
@@ -122,14 +129,16 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
             throws WebloggerException, AccessDeniedException {
 
         if ( weblog == null ) {
+            log.debug("Access denied: Weblog perm required");
             throw new AccessDeniedException("Weblog perm required but no weblog specified");
         }
 
         if ( !WebloggerFactory.getWeblogger().getUserManager()
                 .checkPermission(new WeblogPermission(weblog, actions), user)) {
 
+            log.debug("Access denied: Weblog perm required");
             throw new AccessDeniedException(
-                    "Admin permission required in weblog "+ weblog.getHandle());
+                "Access Denied: " + actions.get(0) + "permission required in weblog "+ weblog.getHandle());
         }
 
     }

@@ -38,6 +38,11 @@
     <container qualifier="tomcat" default="true">
         <configuration>
             <property name="unpackArchive">false</property>
+	    <property name="javaVmArguments">
+            -Xms3003m -Xmx3003m -Droller.custom.config=${project.basedir}/target/test-classes/roller-custom.properties
+        </property>
+	    <property name="user">tomcat</property>
+	    <property name="pass">tomcat</property>
         </configuration>
     </container>
 

@@ -16,8 +16,11 @@
  */
 package org.apache.roller.weblogger.rest;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
@@ -40,8 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
-
- @RunWith(Arquillian.class)
+@RunWith(Arquillian.class)
 public class WeblogsEndpointIT extends TestCase {
 
     protected static Log log = LogFactory.getFactory().getInstance(WeblogsEndpointIT.class);
@@ -120,13 +122,20 @@ public class WeblogsEndpointIT extends TestCase {
                 .header("Authorization", authorizationHeader);
 
             log.debug("GET " + client.getCurrentURI() + " Authentication: " + authorizationHeader );
-            String response = client.get(String.class);
 
-            Assert.assertEquals("OK", response);
+            String responseString = client.get( String.class );
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> responseMap = mapper.readValue( 
+                    responseString,  new TypeReference<Map<String, Object>>() { } );
+
+            Assert.assertEquals( 1, responseMap.size() );
 
         } finally {
             TestUtils.teardownUser( dave.getUserName() );
             TestUtils.teardownWeblog( weblogId );
+
+            TestUtils.shutdownWeblogger();
         }
     }
 }

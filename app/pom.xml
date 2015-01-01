@@ -678,6 +678,18 @@
             <dependencies>
                 <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
+                    <artifactId>arquillian-tomcat-managed-7</artifactId>
+                    <version>1.0.0.CR7</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+
+<!--        <profile>
+            <id>tomcat-embedded</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-tomcat-embedded-7</artifactId>
                     <version>1.0.0.CR7</version>
                     <scope>test</scope>
@@ -701,7 +713,7 @@
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
-        </profile>
+        </profile>-->
 
     </profiles>
 

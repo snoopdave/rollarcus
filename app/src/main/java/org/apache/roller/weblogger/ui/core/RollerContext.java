@@ -203,7 +203,7 @@ public class RollerContext implements ServletContextListener {
          
     /**
      * Flush user from any caches maintained by security system.
-     * TODO: do we need this that that we've swtiched from Spring Security to Shiro.
+     * TODO: do we need this that that we've switched from Spring Security to Shiro?
      */
     public static void flushAuthenticationUserCache(String userName) {                                
     }

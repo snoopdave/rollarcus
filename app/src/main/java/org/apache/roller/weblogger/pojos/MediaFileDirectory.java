@@ -20,6 +20,7 @@ package org.apache.roller.weblogger.pojos;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.roller.util.UUIDGenerator;
@@ -97,6 +98,7 @@ public class MediaFileDirectory {
      * Get the weblog which owns this folder.
      * 
      */
+    @JsonIgnore
     public Weblog getWeblog() {
         return weblog;
     }

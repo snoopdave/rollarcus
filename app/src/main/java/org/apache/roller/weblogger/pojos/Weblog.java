@@ -21,6 +21,7 @@ package org.apache.roller.weblogger.pojos;
 import java.io.Serializable;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.roller.weblogger.WebloggerException;
@@ -149,6 +150,7 @@ public class Weblog implements Serializable {
     /**
      * Get the Theme object in use by this weblog, or null if no theme selected.
      */
+    @JsonIgnore
     public WeblogTheme getTheme() {
         try {
             // let the ThemeManager handle it
@@ -830,6 +832,7 @@ public class Weblog implements Serializable {
         getWeblogCategories().add(category);
     }
 
+    @JsonIgnore
     public List<WeblogCategory> getWeblogCategories() {
         return weblogCategories;
     }
@@ -847,6 +850,7 @@ public class Weblog implements Serializable {
         return false;
     }
 
+    @JsonIgnore
     public List<WeblogBookmarkFolder> getBookmarkFolders() {
         return bookmarkFolders;
     }
@@ -855,6 +859,7 @@ public class Weblog implements Serializable {
         this.bookmarkFolders = bookmarkFolders;
     }
 
+    @JsonIgnore
     public List<MediaFileDirectory> getMediaFileDirectories() {
         return mediaFileDirectories;
     }

@@ -1,55 +1,31 @@
 README.txt
 ===
 
-This is Rollarcus: my experimentatal fork of Apache Roller.
+This is Rollarcus: my experimentatal fork of [Apache Roller](https://github.com/apache/roller).
 
-This branch __jaxrs_not_struts__ adds a REST API to Roller, authentication by Shiro and REST API testing via Arquillian and Embedded Tomcat.
+This branch of Rollarcus __jaxrs_not_struts__ adds a REST API to Roller, 
+authentication by Shiro and REST API testing via Arquillian and Embedded Tomcat.
 
-This file exists at the top-level of the Roller source tree.
-
-Roller is made up of the following Maven projects:
-
-roller-project:         Top level project
-* app:                    Roller Weblogger webapp, JSP pages, Velocity templates
-* assembly-release:       Used to create official distributions of Roller
-* docs:                   Roller documentation in ODT (OpenOffice/LibreOffice) format
-* it-selenium             Integrated browser tests for Roller using Selenium
-
-To pull the latest trunk sources you need a Subversion client:
-
-svn co https://svn.apache.org/repos/asf/roller/trunk roller_trunk
-
-Building this version of Roller requires Apache Maven 3.0.5.
-How to build Roller: https://cwiki.apache.org/confluence/x/EM4
-To build and run Roller on Eclipse: https://cwiki.apache.org/confluence/x/EM4
-
-How to build the source
+Status
 ---
 
-The normal Roller build creates a product generically suitable for use several
-application containers, however see the Roller Install guide for application server
-specific configuration information.
+Currently, there is one end-point called /weblogs that is protected by HTTP
+Basic Authentication. There is also one JUnit test that tests the end-point.
+The test runs as a Failsafe Integration test. To run the test you need:
 
-After pulling the source tree and changing directory to its top level, as
-indicated above, the following command will build and run all unit tests:
+* Tomcat 7 installed on your system 
+* CATALINA_HOME environment variable set to point to Tomcat directory
+* Derby client, mail and activation jars in $CATALINA_HOME/lib
 
-   mvn clean install
+The test will be run when you run a normal build like this:
 
-After doing that, you should find the newly built Roller webapp, suitable
-for use in app/target/roller. 
+    mvn install
 
-To build Roller, subsequently run "mvn clean install" from the assembly-release
-folder.  After that, you'll find Roller distribution files in 
-assembly-release/target. 
+If you want to run only the REST test and nothing else then use this voodoo:
 
-NOTES
+    mvn verify -Dit.test=org.apache.roller.weblogger.rest.WeblogsEndpointIT -Dtest=foo -DfailIfNoTests=false
+
+That's all
 ---
 
-Building other versions of Roller
-
-If you wish to pull a branch other than the trunk, replace the word
-"trunk" in both lines above with the appropriate branch name.  Note that
-versions of Roller before 5.0 have an Ant-based build.  In general, you should
-be able to follow instructions accompanying the sources that you pull in order
-to build that version.
-
+Want to contribute? Shoot me a PR.

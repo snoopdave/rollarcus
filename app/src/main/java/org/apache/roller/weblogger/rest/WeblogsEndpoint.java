@@ -17,8 +17,13 @@
 
 package org.apache.roller.weblogger.rest;
 
+ import com.fasterxml.jackson.databind.ObjectMapper;
  import org.apache.commons.logging.Log;
  import org.apache.commons.logging.LogFactory;
+ import org.apache.roller.weblogger.business.WeblogManager;
+ import org.apache.roller.weblogger.business.Weblogger;
+ import org.apache.roller.weblogger.business.WebloggerFactory;
+ import org.apache.roller.weblogger.pojos.Weblog;
  import org.apache.roller.weblogger.rest.auth.RequireUser;
  import org.apache.roller.weblogger.rest.auth.RequireWeblogAdmin;
 
@@ -27,48 +32,60 @@ package org.apache.roller.weblogger.rest;
  import javax.ws.rs.PUT;
  import javax.ws.rs.Path;
  import javax.ws.rs.core.Response;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+import javax.ws.rs.Produces;
 
 
-@Path("/weblogs")
+ @Path("/weblogs")
 public class WeblogsEndpoint {
 
-    protected static Log log = LogFactory.getFactory().getInstance(WeblogsEndpoint.class);
+    protected static final Log log = LogFactory.getFactory().getInstance(WeblogsEndpoint.class);
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
 
     /** Get all weblogs in system. */
     @GET
-    @RequireUser
     @Path("/")
+    //@RequireGlobalAdmin
+    @RequireUser
+    @Produces("application/json")
     public Response getWeblogs() {
 
+        int offset = 0;
+        int length = 100;
 
-//        int offset = 0;
-//        int length = 100;
-//
-//        Weblogger roller = WebloggerFactory.getWeblogger();
-//        WeblogManager weblogMgr = roller.getWeblogManager();
-//
-//        try {
-//            List<Weblog> weblogs = weblogMgr.getWeblogs(
-//                    Boolean.TRUE, // enabled
-//                    Boolean.TRUE, // active
-//                    null, // startDate
-//                    null, // endDate
-//                    offset, 
-//                    length);
-//
-//        } catch (WebloggerException ex) {
-//            return Response.serverError().entity("Error returning weblogs").build();
-//        }
+        Weblogger roller = WebloggerFactory.getWeblogger();
+        WeblogManager weblogMgr = roller.getWeblogManager();
 
-        return Response.ok("OK").build();
+        try {
+            List<Weblog> weblogs = weblogMgr.getWeblogs(
+                    Boolean.TRUE, // enabled
+                    Boolean.TRUE, // active
+                    null, // startDate
+                    null, // endDate
+                    offset,
+                    length);
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put( "weblogs", weblogs );
+            String responseJson = mapper.writeValueAsString( responseMap );
+
+            return Response.ok( responseJson ).build();
+
+        } catch (Exception ex) {
+            log.error("Error returning weblogs", ex);
+            return Response.serverError().entity("Error returning weblogs").build();
+        }
     }
   
 
     /** Get one weblog. */
     @PUT
-    @RequireWeblogAdmin
     @Path("/{handle}")
+    @RequireWeblogAdmin
     public Response putWeblog() {
         return Response.ok("OK").build();
     }
@@ -76,8 +93,8 @@ public class WeblogsEndpoint {
     
     /** Post weblog creates a new weblog. */
     @POST
-    @RequireUser
     @Path("/{handle}")
+    @RequireUser
     public Response postWeblog() {
         return Response.ok("OK").build();
     }

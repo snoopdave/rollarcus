@@ -20,6 +20,8 @@ package org.apache.roller.weblogger.pojos;
 
 import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.roller.weblogger.WebloggerException;
@@ -171,6 +173,7 @@ public class WeblogCategory implements Serializable, Comparable<WeblogCategory> 
     /**
      * Get the weblog which owns this category.
      */
+    @JsonIgnore
     public Weblog getWeblog() {
         return weblog;
     }

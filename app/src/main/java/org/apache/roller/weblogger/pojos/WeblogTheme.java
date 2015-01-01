@@ -18,6 +18,8 @@
 
 package org.apache.roller.weblogger.pojos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 
 
@@ -38,8 +40,9 @@ public abstract class WeblogTheme implements Theme, Serializable {
     public WeblogTheme(Weblog weblog) {
         this.weblog = weblog;
     }
-    
-    
+
+
+    @JsonIgnore
     public Weblog getWeblog() {
         return this.weblog;
     }
