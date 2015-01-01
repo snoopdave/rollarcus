@@ -1,55 +1,22 @@
 README.txt
 ===
 
-This is Rollarcus: my experimentatal fork of Apache Roller.
+This is Rollarcus: my experimental fork of [Apache Roller](https://github.com/apache/roller).
 
 This branch __shiro_not_spring__ replaces Spring Security with Apache Shiro and completely removes Spring from Roller.
 
-This file exists at the top-level of the Roller source tree.
-
-Roller is made up of the following Maven projects:
-
-roller-project:         Top level project
-* app:                    Roller Weblogger webapp, JSP pages, Velocity templates
-* assembly-release:       Used to create official distributions of Roller
-* docs:                   Roller documentation in ODT (OpenOffice/LibreOffice) format
-* it-selenium             Integrated browser tests for Roller using Selenium
-
-To pull the latest trunk sources you need a Subversion client:
-
-svn co https://svn.apache.org/repos/asf/roller/trunk roller_trunk
-
-Building this version of Roller requires Apache Maven 3.0.5.
-How to build Roller: https://cwiki.apache.org/confluence/x/EM4
-To build and run Roller on Eclipse: https://cwiki.apache.org/confluence/x/EM4
-
-How to build the source
+Status
 ---
 
-The normal Roller build creates a product generically suitable for use several
-application containers, however see the Roller Install guide for application server
-specific configuration information.
+Shiro is working for Roller authentication via form-based login, but some more
+advanced features like LDAP and OpenID support are not yet implemented.
 
-After pulling the source tree and changing directory to its top level, as
-indicated above, the following command will build and run all unit tests:
+The interesting parts are:
 
-   mvn clean install
+* [https://github.com/snoopdave/rollarcus/blob/shiro_not_spring/app/src/main/resources/shiro.ini](shiro.ini) - The Shiro configuration file.
+* [https://github.com/snoopdave/rollarcus/blob/shiro_not_spring/app/src/main/java/org/apache/roller/weblogger/auth/ShiroAuthorizingRealm.java](ShiroAuthorizingRealm.java) - Which plugs Roller user and role management into Shiro.
 
-After doing that, you should find the newly built Roller webapp, suitable
-for use in app/target/roller. 
-
-To build Roller, subsequently run "mvn clean install" from the assembly-release
-folder.  After that, you'll find Roller distribution files in 
-assembly-release/target. 
-
-NOTES
+That's all
 ---
 
-Building other versions of Roller
-
-If you wish to pull a branch other than the trunk, replace the word
-"trunk" in both lines above with the appropriate branch name.  Note that
-versions of Roller before 5.0 have an Ant-based build.  In general, you should
-be able to follow instructions accompanying the sources that you pull in order
-to build that version.
-
+Want to contribute? Shoot me a PR.
