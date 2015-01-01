@@ -1,7 +1,7 @@
 README.txt
 ===
 
-This is Rollarcus: my experimentatal fork of [Apache Roller](https://github.com/apache/roller).
+This is Rollarcus: my experimental fork of [Apache Roller](https://github.com/apache/roller).
 
 This branch of Rollarcus __jaxrs_not_struts__ adds a REST API to Roller, 
 authentication by Shiro and REST API testing via Arquillian and Embedded Tomcat.
