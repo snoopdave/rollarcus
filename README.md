@@ -1,4 +1,4 @@
-README.txt
+Rollarcus: shiro_not_spring branch
 ===
 
 This is Rollarcus: my experimental fork of [Apache Roller](https://github.com/apache/roller).
