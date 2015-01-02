@@ -1,4 +1,4 @@
-README.txt
+Rollarcus: jaxrs_not_struts branch
 ===
 
 This is Rollarcus: my experimental fork of [Apache Roller](https://github.com/apache/roller).
