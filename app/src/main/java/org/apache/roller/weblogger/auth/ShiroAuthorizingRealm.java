@@ -54,23 +54,29 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
     }
 
     @Override
-    public AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) 
+    public AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken)
             throws AuthenticationException {
 
         log.info("ShiroAuthorizingRealm.doGetAuthenticationInfo()");
 
         UsernamePasswordToken token = (UsernamePasswordToken) authToken;
 
-        User user; 
+        User user;
         try {
             user = loadUserByUsername( token.getUsername() );
+
         } catch (WebloggerException ex) {
+            log.error("Error looking up user", ex);
             throw new AuthenticationException("Error looking up user " + token.getUsername(), ex);
         }
 
         if (user != null) {
-            return new SimpleAuthenticationInfo( user.getUserName(), user.getPassword(), getName());
+            log.debug("Returning user " + user.getUserName() + " password " + user.getPassword());
+            return new SimpleAuthenticationInfo(
+                    user.getUserName(), new Sha1Hash(user.getPassword()), getName());
+
         } else {
+            log.error("Username not found: " + token.getUsername());
             throw new AuthenticationException("Username not found: " + token.getUsername());
         }
     }
@@ -102,6 +108,7 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
             for ( String role : roles ) {
                 info.addRole( role );
             }
+            log.debug("Returning " + roles.size() + " roles for user " + userName + " roles= " + roles);
             return info;
 
         } else {
@@ -112,7 +119,7 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
     @Override
     public boolean supports( AuthenticationToken token ) {
         return true;
-    } 
+    }
 
 
     private User loadUserByUsername(String userName) throws WebloggerException {
@@ -131,14 +138,14 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
 
             userData = umgr.getUserByOpenIdUrl(userName);
             if (userData == null) {
-                log.warn("No user found with OpenID URL: " + userName 
-                    +" (OpenID aliased by auth provider?) Confirm URL exists in roller_user table");
+                log.warn("No user found with OpenID URL: " + userName
+                        +" (OpenID aliased by auth provider?) Confirm URL exists in roller_user table");
             }
             return userData;
 
         } else {
             return umgr.getUserByUserName(userName);
-        }            
+        }
     }
 
 }
