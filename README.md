@@ -11,6 +11,14 @@ Status
 
 Currently, there is one end-point called /weblogs that is protected by HTTP
 Basic Authentication. There is also one JUnit test that tests the end-point.
+The interesting parts are:
+
+* [WeblogsEndpoint.java](https://github.com/snoopdave/rollarcus/blob/jaxrs_not_struts/app/src/main/java/org/apache/roller/weblogger/rest/WeblogsEndpoint.java) - JAX-RS resource that returns Weblogs protected by authorization annotations.
+* [WeblogsEndpointIT.java](https://github.com/snoopdave/rollarcus/blob/jaxrs_not_struts/app/src/test/java/org/apache/roller/weblogger/rest/WeblogsEndpointIT.java) - Test for the weblogs end-point.
+
+
+Running the code
+---
 The test runs as a Failsafe Integration test. To run the test you need:
 
 * Tomcat 7 installed on your system 
