@@ -108,7 +108,7 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
             for ( String role : roles ) {
                 info.addRole( role );
             }
-            log.debug("Returning " + roles.size() + " roles for user " + userName );
+            log.debug("Returning " + roles.size() + " roles for user " + userName + " roles= " + roles);
             return info;
 
         } else {

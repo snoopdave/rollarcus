@@ -24,18 +24,18 @@ package org.apache.roller.weblogger.rest;
  import org.apache.roller.weblogger.business.Weblogger;
  import org.apache.roller.weblogger.business.WebloggerFactory;
  import org.apache.roller.weblogger.pojos.Weblog;
- import org.apache.roller.weblogger.rest.auth.RequireUser;
  import org.apache.roller.weblogger.rest.auth.RequireWeblogAdmin;
 
  import javax.ws.rs.GET;
- import javax.ws.rs.POST;
- import javax.ws.rs.PUT;
  import javax.ws.rs.Path;
  import javax.ws.rs.core.Response;
  import java.util.HashMap;
  import java.util.List;
  import java.util.Map;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import org.apache.roller.weblogger.rest.auth.RequireGlobalAdmin;
 
 
  @Path("/weblogs")
@@ -49,25 +49,22 @@ public class WeblogsEndpoint {
     /** Get all weblogs in system. */
     @GET
     @Path("/")
-    //@RequireGlobalAdmin
-    @RequireUser
+    @RequireGlobalAdmin
     @Produces("application/json")
-    public Response getWeblogs() {
-
-        int offset = 0;
-        int length = 100;
+    public Response getWeblogs( 
+            @QueryParam("offset") Integer offset, @QueryParam("limit") Integer limit ) {
 
         Weblogger roller = WebloggerFactory.getWeblogger();
         WeblogManager weblogMgr = roller.getWeblogManager();
 
         try {
             List<Weblog> weblogs = weblogMgr.getWeblogs(
-                    Boolean.TRUE, // enabled
-                    Boolean.TRUE, // active
-                    null, // startDate
-                    null, // endDate
-                    offset,
-                    length);
+                Boolean.TRUE, // enabled
+                null, // active
+                null, // startDate
+                null, // endDate
+                offset == null ? 0 : offset,
+                limit == null ? 100 : limit);
 
             Map<String, Object> responseMap = new HashMap<>();
             responseMap.put( "weblogs", weblogs );
@@ -83,20 +80,29 @@ public class WeblogsEndpoint {
   
 
     /** Get one weblog. */
-    @PUT
+    @GET
     @Path("/{handle}")
     @RequireWeblogAdmin
-    public Response putWeblog() {
-        return Response.ok("OK").build();
-    }
+    public Response getWeblog( @PathParam("handle") String handle ) {
 
-    
-    /** Post weblog creates a new weblog. */
-    @POST
-    @Path("/{handle}")
-    @RequireUser
-    public Response postWeblog() {
-        return Response.ok("OK").build();
+        Weblogger roller = WebloggerFactory.getWeblogger();
+        WeblogManager weblogMgr = roller.getWeblogManager();
+
+        try {
+            Weblog weblog = weblogMgr.getWeblogByHandle( handle );
+
+            if ( weblog == null ) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put( "weblog", weblog );
+            String responseJson = mapper.writeValueAsString( responseMap );
+
+            return Response.ok( responseJson ).build();
+
+        } catch (Exception ex) {
+            return Response.serverError().entity("Error returning weblogs").build();
+        }
     }
-    
 }

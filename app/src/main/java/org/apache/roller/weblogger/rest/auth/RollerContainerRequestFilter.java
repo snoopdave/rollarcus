@@ -58,7 +58,8 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
     public void filter(ContainerRequestContext ctx) throws IOException {
 
         log.debug("Entering filter() with header Authentication: " 
-            + ctx.getHeaderString("Authorization"));
+            + ctx.getHeaderString("Authorization")
+            + " and URI " + ctx.getUriInfo().getPath());
 
         try {
             Method method = resourceInfo.getResourceMethod();
@@ -69,9 +70,16 @@ public class RollerContainerRequestFilter implements ContainerRequestFilter {
             Weblog weblog = null;
             String uri = ctx.getUriInfo().getPath();
             String[] parts = uri.split("/");
-            if ( parts[0].equals("weblogs") && parts.length > 1 ) {
-                String weblogHandle = parts[1];
-                weblog = weblogger.getWeblogManager().getWeblogByHandle( weblogHandle );
+            if ( parts.length > 1 ) {
+                if (parts[0].equals("weblogs") && parts.length > 1) {
+                    String weblogHandle = parts[1];
+                    weblog = weblogger.getWeblogManager().getWeblogByHandle( weblogHandle );
+                    log.debug("Processing a request for weblog " + weblogHandle);
+                } else {
+                    log.debug("Processing a non weblog-specific request 1");
+                }
+            } else {
+                log.debug("Processing a non weblog-specific request 2");
             }
 
             if (method.isAnnotationPresent(RequireGlobalAdmin.class)) {
