@@ -17,28 +17,24 @@
 
 package org.apache.roller.weblogger.rest;
 
- import com.fasterxml.jackson.databind.ObjectMapper;
- import org.apache.commons.logging.Log;
- import org.apache.commons.logging.LogFactory;
- import org.apache.roller.weblogger.business.WeblogManager;
- import org.apache.roller.weblogger.business.Weblogger;
- import org.apache.roller.weblogger.business.WebloggerFactory;
- import org.apache.roller.weblogger.pojos.Weblog;
- import org.apache.roller.weblogger.rest.auth.RequireWeblogAdmin;
-
- import javax.ws.rs.GET;
- import javax.ws.rs.Path;
- import javax.ws.rs.core.Response;
- import java.util.HashMap;
- import java.util.List;
- import java.util.Map;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.Weblogger;
+import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.rest.auth.RequireGlobalAdmin;
+import org.apache.roller.weblogger.rest.auth.RequireWeblogAdmin;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
- @Path("/weblogs")
+@Path("/weblogs")
 public class WeblogsEndpoint {
 
     protected static final Log log = LogFactory.getFactory().getInstance(WeblogsEndpoint.class);

@@ -16,35 +16,34 @@
  */
 package org.apache.roller.weblogger.rest;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
+ import com.fasterxml.jackson.core.type.TypeReference;
+ import com.fasterxml.jackson.databind.ObjectMapper;
+ import junit.framework.TestCase;
+ import org.apache.commons.logging.Log;
+ import org.apache.commons.logging.LogFactory;
+ import org.apache.cxf.common.util.Base64Utility;
+ import org.apache.cxf.jaxrs.client.WebClient;
+ import org.apache.roller.weblogger.TestUtils;
+ import org.apache.roller.weblogger.business.PropertiesManager;
+ import org.apache.roller.weblogger.business.UserManager;
+ import org.apache.roller.weblogger.business.WebloggerFactory;
+ import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
+ import org.apache.roller.weblogger.pojos.User;
+ import org.apache.roller.weblogger.pojos.Weblog;
+ import org.jboss.arquillian.container.test.api.Deployment;
+ import org.jboss.arquillian.junit.Arquillian;
+ import org.jboss.arquillian.test.api.ArquillianResource;
+ import org.jboss.shrinkwrap.api.ShrinkWrap;
+ import org.jboss.shrinkwrap.api.spec.WebArchive;
+ import org.junit.Assert;
+ import org.junit.Test;
+ import org.junit.runner.RunWith;
 
-import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.common.util.Base64Utility;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.roller.weblogger.TestUtils;
-import org.apache.roller.weblogger.business.PropertiesManager;
-import org.apache.roller.weblogger.business.UserManager;
-import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
-import org.apache.roller.weblogger.pojos.User;
-import org.apache.roller.weblogger.pojos.Weblog;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+ import java.io.File;
+ import java.io.IOException;
+ import java.net.URL;
+ import java.util.List;
+ import java.util.Map;
 
 
 @RunWith(Arquillian.class)
