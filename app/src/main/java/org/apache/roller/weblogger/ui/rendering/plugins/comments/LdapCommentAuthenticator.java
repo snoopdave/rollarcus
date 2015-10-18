@@ -17,8 +17,11 @@
  */
 package org.apache.roller.weblogger.ui.rendering.plugins.comments;
 
-import java.util.Hashtable;
-import java.util.ResourceBundle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.roller.weblogger.config.WebloggerConfig;
+import org.apache.roller.weblogger.util.I18nMessages;
+import org.apache.roller.weblogger.util.Utilities;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -26,11 +29,8 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.util.Utilities;
+import java.util.Hashtable;
+import java.util.Locale;
 
 /**
  * Requires the commenter to authenticate to a central LDAP server.  Here are the roller.properties that need to 
@@ -56,8 +56,6 @@ import org.apache.roller.weblogger.util.Utilities;
  */
 public class LdapCommentAuthenticator implements CommentAuthenticator {
 
-	private transient ResourceBundle bundle = ResourceBundle.getBundle("ApplicationResources");
-
 	private static Log LOG = LogFactory.getLog(LdapCommentAuthenticator.class);
 
 	public String getHtml(HttpServletRequest request) {
@@ -75,17 +73,19 @@ public class LdapCommentAuthenticator implements CommentAuthenticator {
 			ldapPass = ldapPassTemp != null ? ldapPassTemp : "";
 		}
 
+		Locale locale = CommentAuthenticatorUtils.getLocale(request);
+		I18nMessages messages = I18nMessages.getMessages(locale);
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("<p>");
-		sb.append(bundle.getString("comments.ldapAuthenticatorUserName"));
+		sb.append(messages.getString("comments.ldapAuthenticatorUserName"));
 		sb.append("</p>");
 		sb.append("<p>");
 		sb.append("<input name=\"ldapUser\" value=\"");
 		sb.append(ldapUser + "\">");
 		sb.append("</p>");
 		sb.append("<p>");
-		sb.append(bundle.getString("comments.ldapAuthenticatorPassword"));
+		sb.append(messages.getString("comments.ldapAuthenticatorPassword"));
 		sb.append("</p>");
 		sb.append("<p>");
 		sb.append("<input type=\"password\" name=\"ldapPass\" value=\"");

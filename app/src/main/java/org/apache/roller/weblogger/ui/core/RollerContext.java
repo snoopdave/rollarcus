@@ -17,24 +17,26 @@
 
 package org.apache.roller.weblogger.ui.core;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.Properties;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.BootstrapException;
-import org.apache.roller.weblogger.business.startup.StartupException;
-import org.apache.roller.weblogger.config.WebloggerConfig;
+import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.business.startup.StartupException;
 import org.apache.roller.weblogger.business.startup.WebloggerStartup;
+import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.weblogger.ui.core.plugins.UIPluginManager;
 import org.apache.roller.weblogger.ui.core.plugins.UIPluginManagerImpl;
 import org.apache.roller.weblogger.util.cache.CacheManager;
 import org.apache.velocity.runtime.RuntimeSingleton;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Properties;
 
 
 /**
@@ -132,17 +134,24 @@ public class RollerContext implements ServletContextListener {
             buf.append("\n--------------------------------------------------------------");
             log.info(buf.toString());
         } else {
+            Weblogger weblogger = null;
+
             try {
                 // trigger bootstrapping process
                 WebloggerFactory.bootstrap();
                 
                 // trigger initialization process
-                WebloggerFactory.getWeblogger().initialize();
+                weblogger = WebloggerFactory.getWeblogger();
+                weblogger.initialize();
                 
             } catch (BootstrapException ex) {
                 log.fatal("Roller Weblogger bootstrap failed", ex);
             } catch (WebloggerException ex) {
                 log.fatal("Roller Weblogger initialization failed", ex);
+            } finally {
+                if (weblogger != null) {
+                    weblogger.release();
+                }
             }
 		}
             

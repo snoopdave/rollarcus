@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.apache.roller</groupId>
         <artifactId>roller-project</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,8 +16,8 @@
     <packaging>war</packaging>
 
     <properties>
-        <lucene.version>4.10.0</lucene.version>
         <jetty.version>9.2.6.v20141205</jetty.version>
+        <lucene.version>4.10.3</lucene.version>
     </properties>
 
     <dependencyManagement>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.7</version>
+            <version>1.7.10</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -320,7 +320,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
         </dependency>
 
         <!-- test deps -->
@@ -409,6 +409,41 @@
                     <path>/${project.build.finalName}</path>
                 </configuration>
             </plugin>-->
+            
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                    <webApp>
+                        <contextPath>/roller</contextPath>
+                    </webApp>
+                    <jettyXml>src/test/resources/jetty.xml</jettyXml>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>roller.custom.config</name>
+                            <value>${project.build.directory}/test-classes/roller-jettyrun.properties</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+                <dependencies>
+                    <!-- Dependencies needed when using mvn jetty:run, not mvn test -->
+                    <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby</artifactId>
+                        <version>${derby.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derbyclient</artifactId>
+                        <version>${derby.version}</version>
+                    </dependency>
+                    <dependency>
+	                    <groupId>javax.mail</groupId>
+	                    <artifactId>mail</artifactId>
+	                    <version>1.4.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
             <!-- Activates the Derby database for unit tests and mvn jetty:run -->
             <plugin>
