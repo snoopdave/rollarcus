@@ -72,9 +72,8 @@ public class ShiroAuthorizingRealm extends AuthorizingRealm {
 
         if (user != null) {
             log.debug("Returning user " + user.getUserName() + " password " + user.getPassword());
-            return new SimpleAuthenticationInfo( 
-                user.getUserName(), new Sha1Hash(user.getPassword()), getName());
-            
+            return new SimpleAuthenticationInfo(
+                    user.getUserName(), user.getPassword(), getName());
         } else {
             log.error("Username not found: " + token.getUsername());
             throw new AuthenticationException("Username not found: " + token.getUsername());
