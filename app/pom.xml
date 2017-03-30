@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.apache.roller</groupId>
         <artifactId>roller-project</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,7 +16,9 @@
     <packaging>war</packaging>
 
     <properties>
-        <lucene.version>4.10.0</lucene.version>
+        <lucene.version>4.10.3</lucene.version>
+        <spring.version>4.1.4.RELEASE</spring.version>
+        <spring.security.version>3.2.5.RELEASE</spring.security.version>
     </properties>
 
     <dependencies>
@@ -79,7 +81,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>4.0</version>
         </dependency>
 
         <dependency>
@@ -181,7 +183,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.7</version>
+            <version>1.7.10</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -276,7 +278,21 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
+        </dependency>
+
+        <!-- WebJars deps -->
+
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>webjars-servlet-2.x</artifactId>
+            <version>1.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>angular</artifactId>
+            <version>1.2.29</version>
         </dependency>
 
         <!-- test deps -->
@@ -318,7 +334,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.3</version>
+                <version>2.4</version>
                 <configuration>
                     <attachClasses>true</attachClasses>
                 </configuration>
@@ -351,22 +367,12 @@
                         <artifactId>derbyclient</artifactId>
                         <version>${derby.version}</version>
                     </dependency>
+                    <dependency>
+	                    <groupId>javax.mail</groupId>
+	                    <artifactId>mail</artifactId>
+	                    <version>1.4.7</version>
+                    </dependency>
                 </dependencies>
-            </plugin>
-
-            <!-- Allow for standalone Tomcat deployment
-                 using mvn tomcat7:redeploy (See
-                 http://www.jroller.com/gmazza/entry/web_service_tutorial#maventomcat
-                 for necessary config info)
-            -->
-            <plugin>
-                <groupId>org.apache.tomcat.maven</groupId>
-                <artifactId>tomcat7-maven-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <server>myTomcat</server>
-                    <path>/${project.build.finalName}</path>
-                </configuration>
             </plugin>
 
             <!-- Activates the Derby database for unit tests and mvn jetty:run -->
@@ -492,6 +498,19 @@
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.7</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>1.0b3</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>ant</groupId>
+                                <artifactId>ant</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
 
                 <executions>
                     <execution>
@@ -502,15 +521,15 @@
                         </goals>
                         <configuration>
                             <target>
-                              
-                                <!-- TODO: why do we need these mkdirs now? -->  
-                                <mkdir dir="${basedir}/target/dbscripts/db2"/>
-                                <mkdir dir="${basedir}/target/dbscripts/derby"/>
-                                <mkdir dir="${basedir}/target/dbscripts/hsqldb"/>
-                                <mkdir dir="${basedir}/target/dbscripts/mssql"/>
-                                <mkdir dir="${basedir}/target/dbscripts/mysql"/>
-                                <mkdir dir="${basedir}/target/dbscripts/oracle"/>
-                                <mkdir dir="${basedir}/target/dbscripts/postgresql"/>
+                                <!-- Workaround for git distribution that doesn't keep empty directories.
+                                     For detail check [ROL-2086] -->
+                                <taskdef resource="net/sf/antcontrib/antlib.xml" />
+                                <property file="${basedir}/src/main/resources/sql/dbscripts.properties" />
+                                <for list="${databases}" param="database" delimiter=" ">
+                                    <sequential>
+                                        <mkdir dir="${basedir}/target/dbscripts/@{database}" />
+                                    </sequential>
+                                </for>
 
                                 <taskdef name="texen"
                                          classname="org.apache.velocity.texen.ant.TexenTask"
