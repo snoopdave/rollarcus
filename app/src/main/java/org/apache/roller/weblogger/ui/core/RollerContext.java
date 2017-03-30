@@ -42,37 +42,38 @@ import java.util.Properties;
 /**
  * Initialize the Roller web application/context.
  */
-public class RollerContext implements ServletContextListener { 
+public class RollerContext implements ServletContextListener {
     
     private static Log log = LogFactory.getLog(RollerContext.class);
-    
+
     private static ServletContext servletContext = null;
 
-    
+
     public RollerContext() {
         super();
     }
-    
-    
+
+
     /**
-     * Access to the plugin manager for the UI layer. TODO: we may want 
-     * something similar to the Roller interface for the UI layer if we dont 
+     * Access to the plugin manager for the UI layer. TODO: we may want
+     * something similar to the Roller interface for the UI layer if we dont
      * want methods like this here in RollerContext.
      */
     public static UIPluginManager getUIPluginManager() {
         return UIPluginManagerImpl.getInstance();
     }
-    
-    
+
+
     /**
      * Get the ServletContext.
+     *
      * @return ServletContext
      */
     public static ServletContext getServletContext() {
         return servletContext;
-    } 
-    
-    
+    }
+
+
     /**
      * Responds to app-init event and triggers startup procedures.
      */
@@ -82,7 +83,7 @@ public class RollerContext implements ServletContextListener {
 
         // Keep a reference to ServletContext object
         RollerContext.servletContext = sce.getServletContext();
-        
+
         // get the *real* path to <context>/resources
         String ctxPath = servletContext.getRealPath("/");
         if (ctxPath == null) {
@@ -94,7 +95,7 @@ public class RollerContext implements ServletContextListener {
         } else {
             ctxPath += "resources";
         }
-        
+
         // try setting the uploads path to <context>/resources
         // NOTE: this should go away at some point
         // we leave it here for now to allow users to keep writing
@@ -104,7 +105,7 @@ public class RollerContext implements ServletContextListener {
         // enough to disregard this call unless the uploads.path
         // is set to ${webapp.context}
         WebloggerConfig.setUploadsDir(ctxPath);
-        
+
         // try setting the themes path to <context>/themes
         // NOTE: this should go away at some point
         // we leave it here for now to allow users to keep using
@@ -113,9 +114,9 @@ public class RollerContext implements ServletContextListener {
         // also, the WebloggerConfig.setThemesDir() method is smart
         // enough to disregard this call unless the themes.dir
         // is set to ${webapp.context}
-        WebloggerConfig.setThemesDir(servletContext.getRealPath("/")+File.separator+"themes");
-        
-        
+        WebloggerConfig.setThemesDir(servletContext.getRealPath("/") + File.separator + "themes");
+
+
         // Now prepare the core services of the app so we can bootstrap
         try {
             WebloggerStartup.prepare();
@@ -123,8 +124,8 @@ public class RollerContext implements ServletContextListener {
             log.fatal("Roller Weblogger startup failed during app preparation", ex);
             return;
         }
-        
-        
+
+
         // if preparation failed or is incomplete then we are done,
         // otherwise try to bootstrap the business tier
         if (!WebloggerStartup.isPrepared()) {
@@ -139,11 +140,11 @@ public class RollerContext implements ServletContextListener {
             try {
                 // trigger bootstrapping process
                 WebloggerFactory.bootstrap();
-                
+
                 // trigger initialization process
                 weblogger = WebloggerFactory.getWeblogger();
                 weblogger.initialize();
-                
+
             } catch (BootstrapException ex) {
                 log.fatal("Roller Weblogger bootstrap failed", ex);
             } catch (WebloggerException ex) {
@@ -153,67 +154,61 @@ public class RollerContext implements ServletContextListener {
                     weblogger.release();
                 }
             }
-		}
-            
+        }
+
         // do a small amount of work to initialize the web tier
         try {
+            // Initialize Spring Security based on Roller configuration
+            initializeSecurityFeatures(servletContext);
+
             // Setup Velocity template engine
             setupVelocity();
         } catch (WebloggerException ex) {
             log.fatal("Error initializing Roller Weblogger web tier", ex);
         }
-        
+
     }
-    
-    
-    /** 
+
+
+    /**
      * Responds to app-destroy event and triggers shutdown sequence.
      */
-    public void contextDestroyed(ServletContextEvent sce) {      
-        try {
-            WebloggerFactory.getWeblogger().shutdown();        
-            // do we need a more generic mechanism for presentation layer shutdown?
-            CacheManager.shutdown();
-
-        } catch ( Throwable t ) {
-            if ( log.isDebugEnabled() ) { 
-                log.debug("Error during Roller shutdown", t);
-            } else {
-                log.warn("Error during Roller shutdown message is: " + t.getMessage() );
-            }
-        }
+    public void contextDestroyed(ServletContextEvent sce) {
+        WebloggerFactory.getWeblogger().shutdown();
+        // do we need a more generic mechanism for presentation layer shutdown?
+        CacheManager.shutdown();
     }
-    
-    
+
+
     /**
      * Initialize the Velocity rendering engine.
      */
-    private void setupVelocity() throws WebloggerException {        
+    private void setupVelocity() throws WebloggerException {
         log.info("Initializing Velocity");
-        
+
         // initialize the Velocity engine
         Properties velocityProps = new Properties();
-        
+
         try {
             InputStream instream = servletContext.getResourceAsStream("/WEB-INF/velocity.properties");
-            
+
             velocityProps.load(instream);
-            
-            log.debug("Velocity props = "+velocityProps);
-            
+
+            log.debug("Velocity props = " + velocityProps);
+
             // init velocity
             RuntimeSingleton.init(velocityProps);
-            
+
         } catch (Exception e) {
             throw new WebloggerException(e);
         }
-        
+
     }
-         
-    /**
+
+    /*
      * Flush user from any caches maintained by security system.
      * TODO: do we need this that that we've switched from Spring Security to Shiro?
      */
-    public static void flushAuthenticationUserCache(String userName) {                                
+    public static void flushAuthenticationUserCache(String userName) {
     }
 }
