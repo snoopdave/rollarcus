@@ -31,7 +31,7 @@ If you want to run only the REST test and nothing else then use this voodoo:
 
     mvn verify -Dit.test=org.apache.roller.weblogger.rest.WeblogsEndpointIT -Dtest=foo -DfailIfNoTests=false
 
-That's all
----
+That's all.
+-----------
 
 Want to contribute? Shoot me a PR.
