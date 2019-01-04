@@ -32,17 +32,20 @@ pipeline() {
             steps {
                 dir("app") {
                     sh "mvn clean package"
+                    sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
+                    sh "mvn pmd:pmd"
+                    sh "mvn checkstyle:checkstylet"
                     archive 'target/*.jar'
                 }
             }
         }
         stage('Report') {
             steps {
-                sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
                 junit '**/target/surefire-reports/TEST-*.xml'
                 script {
                     def java = scanForIssues tool: [$class: 'Java']
                     def javadoc = scanForIssues tool: [$class: 'JavaDoc']
+                    recordIssues enabledForFailure: true, tool: spotBugs()
                     publishIssues issues: [java, javadoc], unstableTotalAll: 1
                 }
             }
