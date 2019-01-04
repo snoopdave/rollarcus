@@ -32,6 +32,7 @@ pipeline() {
             steps {
                 dir("app") {
                     sh "mvn clean package"
+                    archive 'target/*.jar'
                 }
             }
         }
@@ -39,7 +40,10 @@ pipeline() {
             steps {
                 sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
                 junit '**/target/surefire-reports/TEST-*.xml'
-                archive 'target/*.jar'
+                
+                def java = scanForIssues tool: [$class:'Java']
+                def javadoc = scanForIssues tool: [$class:'JavaDoc']
+                publishIssues issues:[java,javadoc], unstableTotalAll: 1
             }
         }
     }
