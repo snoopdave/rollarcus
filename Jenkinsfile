@@ -34,7 +34,7 @@ pipeline() {
                     sh "mvn clean package"
                     sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
                     sh "mvn pmd:pmd"
-                    sh "mvn checkstyle:checkstylet"
+                    sh "mvn checkstyle:checkstyle"
                     archive 'target/*.jar'
                 }
             }
