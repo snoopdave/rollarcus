@@ -45,8 +45,10 @@ pipeline() {
                 script {
                     def java = scanForIssues tool: [$class: 'Java']
                     def javadoc = scanForIssues tool: [$class: 'JavaDoc']
+                    def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
+                    def pmd = scanForIssues tool: [$class: 'PMD']
                     recordIssues enabledForFailure: true, tool: spotBugs()
-                    publishIssues issues: [java, javadoc], unstableTotalAll: 1
+                    publishIssues issues: [java, javadoc, checkstyle, pmd], unstableTotalAll: 1
                 }
             }
         }
