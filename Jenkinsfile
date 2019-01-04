@@ -35,8 +35,9 @@ pipeline() {
                 }
             }
         }
-        stage('Results') {
+        stage('Report') {
             steps {
+                sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
                 junit '**/target/surefire-reports/TEST-*.xml'
                 archive 'target/*.jar'
             }
