@@ -514,7 +514,7 @@ limitations under the License.
                     </execution>
                     <execution>
                         <id>stop</id>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>stop</goal>
                         </goals>
