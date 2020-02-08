@@ -1,0 +1,22 @@
+
+type WeblogEntry {
+    id: ID!
+    title: String!
+    link: String
+    summary: String
+    text: String!
+    contentType: String!
+    contentSrc: String
+    anchor: String!
+    #pubTime: DateTime
+    #updateTime: DateTime
+    plugins: String
+    allowComments: Boolean
+    commentDays: Int
+    rightToLeft: Boolean
+    pinnedToMain: Boolean
+    #status: PubStatus!
+    locale: String
+    creatorUserName: String
+    searchDescription: String
+}
