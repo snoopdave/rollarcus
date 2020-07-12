@@ -26,10 +26,14 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.servlet.GraphQLConfiguration;
 import graphql.servlet.GraphQLHttpServlet;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import static graphql.schema.idl.RuntimeWiring.newRuntimeWiring;
 
 public class RollerGraphQLServlet extends GraphQLHttpServlet {
+
+    private static Log log = LogFactory.getLog(RollerGraphQLServlet.class);
 
     public RollerGraphQLServlet() {
     }
@@ -40,6 +44,8 @@ public class RollerGraphQLServlet extends GraphQLHttpServlet {
     }
 
     private GraphQLSchema createSchema() {
+        log.debug("Entering");
+
         String schema = "type Query{hello: String}";
 
         SchemaParser schemaParser = new SchemaParser();

@@ -295,6 +295,11 @@
         <load-on-startup>2</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>GraphQLServlet</servlet-name>
+        <servlet-class>org.apache.roller.graphql.RollerGraphQLServlet</servlet-class>
+    </servlet>
+
     <!-- BEGIN OAUTH -->
 
     <servlet>
@@ -427,6 +432,11 @@
     <servlet-mapping>
         <servlet-name>OpenSearchServlet</servlet-name>
         <url-pattern>/roller-services/opensearch/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>GraphQLServlet</servlet-name>
+        <url-pattern>/roller-services/graphql/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
