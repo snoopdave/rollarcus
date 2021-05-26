@@ -16,7 +16,7 @@
  * directory of this distribution.
  */
 
-// @Image(snoopdave/buildstep:latest)
+// @Image(snoopdave/buildstep:1)
 pipeline() {
     agent any
     tools {
