@@ -16,6 +16,7 @@
  * directory of this distribution.
  */
 
+// @Image(cloudbees/codeship-jenkinsfile-step:latest)
 pipeline() {
     agent any
     tools {
