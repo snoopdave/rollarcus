@@ -20,8 +20,8 @@
 pipeline() {
     agent any
     tools {
-        jdk 'jdk'
-        maven 'maven'
+        jdk 'jdk11'
+        maven 'mvn'
     }
     stages {
         stage('Preparation') {
