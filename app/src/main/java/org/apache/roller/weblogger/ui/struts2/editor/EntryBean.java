@@ -189,6 +189,9 @@ public class EntryBean {
     
     public void setCommentDays(Integer commentDays) {
         this.commentDays = commentDays;
+        if (commentDays == -1) {
+            allowComments = false;
+        }
     }
     
     public int getCommentCount() {
@@ -381,7 +384,7 @@ public class EntryBean {
         
         // enclosure url, if it exists
         Set<WeblogEntryAttribute> attrs = entry.getEntryAttributes();
-        if(attrs != null && attrs.size() > 0) {
+        if(attrs != null && !attrs.isEmpty()) {
             for (WeblogEntryAttribute attr : attrs) {
                 if ("att_mediacast_url".equals(attr.getName())) {
                     setEnclosureURL(attr.getValue());
@@ -391,6 +394,7 @@ public class EntryBean {
     }
     
     
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         

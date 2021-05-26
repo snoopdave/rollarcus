@@ -69,6 +69,7 @@ public class WeblogEntriesPermalinkPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public Map getEntries() {
         if (entries == null) {
             try {
@@ -90,16 +91,19 @@ public class WeblogEntriesPermalinkPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getHomeLink() {
         return createURL(0, 0, weblog, locale, pageLink, null, dateString, catName, tags);
     }
     
     
+    @Override
     public String getHomeName() {
         return messageUtils.getString("weblogEntriesPager.single.home");
     }
     
     
+    @Override
     public String getNextLink() {
         if (getNextEntry() != null) {
             return createURL(0, 0, weblog, locale, pageLink, nextEntry.getAnchor(), dateString, catName, tags);
@@ -108,6 +112,7 @@ public class WeblogEntriesPermalinkPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getNextName() {
         if (getNextEntry() != null) {
             String title = Utilities.truncateNicely(getNextEntry().getTitle(), 15, 20, "...");
@@ -117,6 +122,7 @@ public class WeblogEntriesPermalinkPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getPrevLink() {
         if (getPrevEntry() != null) {
             return createURL(0, 0, weblog, locale, pageLink, prevEntry.getAnchor(), dateString, catName, tags);
@@ -125,6 +131,7 @@ public class WeblogEntriesPermalinkPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getPrevName() {
         if (getPrevEntry() != null) {
             String title = Utilities.truncateNicely(getPrevEntry().getTitle(), 15, 20, "...");

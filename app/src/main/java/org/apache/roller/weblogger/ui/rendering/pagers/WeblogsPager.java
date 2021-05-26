@@ -90,6 +90,7 @@ public class WeblogsPager extends AbstractPager {
     }
     
     
+    @Override
     public String getNextLink() {
         // need to add letter param if it exists
         if(letter != null) {
@@ -107,6 +108,7 @@ public class WeblogsPager extends AbstractPager {
     }
     
     
+    @Override
     public String getPrevLink() {
         // need to add letter param if it exists
         if(letter != null) {
@@ -124,6 +126,7 @@ public class WeblogsPager extends AbstractPager {
     }
     
     
+    @Override
     public List<WeblogWrapper> getItems() {
         
         if (weblogs == null) {
@@ -169,6 +172,7 @@ public class WeblogsPager extends AbstractPager {
     }
     
     
+    @Override
     public boolean hasMoreItems() {
         return more;
     }

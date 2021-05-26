@@ -49,6 +49,7 @@ public class RequestMappingFilter implements Filter {
     // list of RequestMappers that want to inspect the request
     private final List<RequestMapper> requestMappers = new ArrayList<RequestMapper>();
     
+    @Override
     public void init(FilterConfig filterConfig) {
         
         // lookup set of request mappers we are going to use
@@ -56,7 +57,7 @@ public class RequestMappingFilter implements Filter {
         String userMappers = WebloggerConfig.getProperty("rendering.userRequestMappers");
         
         // instantiate user defined request mapper classes
-        if(userMappers != null && userMappers.trim().length() > 0) {
+        if(userMappers != null && !userMappers.isBlank()) {
             RequestMapper requestMapper;
             String[] uMappers = userMappers.split(",");
             for (String uMapper : uMappers) {
@@ -74,7 +75,7 @@ public class RequestMappingFilter implements Filter {
         }
         
         // instantiate roller standard request mapper classes
-        if(rollerMappers != null && rollerMappers.trim().length() > 0) {
+        if(rollerMappers != null && !rollerMappers.isBlank()) {
             RequestMapper requestMapper;
             String[] rMappers = rollerMappers.split(",");
             for (String rMapper : rMappers) {
@@ -91,7 +92,7 @@ public class RequestMappingFilter implements Filter {
             }
         }
         
-        if(requestMappers.size() < 1) {
+        if(requestMappers.isEmpty()) {
             // hmm ... failed to load any request mappers?
             log.warn("Failed to load any request mappers.  "+
                     "Weblog urls probably won't function as you expect.");
@@ -105,6 +106,7 @@ public class RequestMappingFilter implements Filter {
     /**
      * Inspect incoming urls and see if they should be routed.
      */
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         
@@ -134,7 +136,8 @@ public class RequestMappingFilter implements Filter {
         log.debug("exiting");
     }
     
-    
+
+    @Override
     public void destroy() {}
     
 }

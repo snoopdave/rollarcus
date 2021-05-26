@@ -25,10 +25,10 @@ import java.util.List;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.config.WebloggerConfig;
 import org.apache.roller.util.UUIDGenerator;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.util.Utilities;
+import org.apache.roller.weblogger.ui.core.RollerContext;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 /**
@@ -115,15 +115,9 @@ public class User implements Serializable {
      *
      * @param newPassword The new password to be set.
      */
-    public void resetPassword(String newPassword) throws WebloggerException {
-        
-        String encrypt = WebloggerConfig.getProperty("passwds.encryption.enabled");
-        String algorithm = WebloggerConfig.getProperty("passwds.encryption.algorithm");
-        if (Boolean.valueOf(encrypt)) {
-            setPassword(Utilities.encodePassword(newPassword, algorithm));
-        } else {
-            setPassword(newPassword);
-        }
+    public void resetPassword(String newPassword) {
+        PasswordEncoder encoder = RollerContext.getPasswordEncoder();
+        setPassword(encoder.encode(newPassword));
     }
 
     /**
@@ -248,6 +242,7 @@ public class User implements Serializable {
     
     //------------------------------------------------------- Good citizenship
     
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("{");
@@ -261,6 +256,7 @@ public class User implements Serializable {
         return buf.toString();
     }
     
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -272,6 +268,7 @@ public class User implements Serializable {
         return new EqualsBuilder().append(getUserName(), o.getUserName()).isEquals();
     }
     
+    @Override
     public int hashCode() {
         return new HashCodeBuilder().append(getUserName()).toHashCode();
     }

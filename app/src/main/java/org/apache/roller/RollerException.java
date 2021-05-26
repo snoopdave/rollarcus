@@ -26,49 +26,49 @@ import java.io.PrintWriter;
  * Base Roller exception class.
  */
 public abstract class RollerException extends Exception {
-    
+
     private final Throwable mRootCause;
-    
-    
+
+
     /**
      * Construct emtpy exception object.
      */
-    public RollerException() {
+    protected RollerException() {
         super();
         mRootCause = null;
     }
-    
-    
+
+
     /**
      * Construct RollerException with message string.
      * @param s Error message string.
      */
-    public RollerException(String s) {
+    protected RollerException(String s) {
         super(s);
         mRootCause = null;
     }
-    
-    
+
+
     /**
      * Construct RollerException, wrapping existing throwable.
      * @param s Error message
      * @param t Existing connection to wrap.
      */
-    public RollerException(String s, Throwable t) {
+    protected RollerException(String s, Throwable t) {
         super(s);
         mRootCause = t;
     }
-    
-    
+
+
     /**
      * Construct RollerException, wrapping existing throwable.
      * @param t Existing exception to be wrapped.
      */
-    public RollerException(Throwable t) {
+    protected RollerException(Throwable t) {
         mRootCause = t;
     }
-    
-    
+
+
     /**
      * Get root cause object, or null if none.
      * @return Root cause or null if none.
@@ -76,8 +76,8 @@ public abstract class RollerException extends Exception {
     public Throwable getRootCause() {
         return mRootCause;
     }
-    
-    
+
+
     /**
      * Get root cause message.
      * @return Root cause message.
@@ -94,12 +94,13 @@ public abstract class RollerException extends Exception {
         }
         return rcmessage;
     }
-    
-    
+
+
     /**
      * Print stack trace for exception and for root cause exception if there is one.
      * @see java.lang.Throwable#printStackTrace()
      */
+    @Override
     public void printStackTrace() {
         super.printStackTrace();
         if (mRootCause != null) {
@@ -107,12 +108,13 @@ public abstract class RollerException extends Exception {
             mRootCause.printStackTrace();
         }
     }
-    
-    
+
+
     /**
      * Print stack trace for exception and for root cause exception if there is one.
      * @param s Stream to print to.
      */
+    @Override
     public void printStackTrace(PrintStream s) {
         super.printStackTrace(s);
         if (mRootCause != null) {
@@ -120,12 +122,13 @@ public abstract class RollerException extends Exception {
             mRootCause.printStackTrace(s);
         }
     }
-    
-    
+
+
     /**
      * Print stack trace for exception and for root cause exception if there is one.
      * @param s Writer to write to.
      */
+    @Override
     public void printStackTrace(PrintWriter s) {
         super.printStackTrace(s);
         if (null != mRootCause) {
@@ -133,5 +136,5 @@ public abstract class RollerException extends Exception {
             mRootCause.printStackTrace(s);
         }
     }
-    
+
 }

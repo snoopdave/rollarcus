@@ -97,6 +97,7 @@ public class TruncateNicelyTag extends StringTagSupport {
         this.appendToEnd = s;
     }
 
+    @Override
     public String changeString(String text) throws JspException {
 
         int l = NumberUtils.toInt(lower);
@@ -105,6 +106,7 @@ public class TruncateNicelyTag extends StringTagSupport {
         return truncateNicely(text, l, u, this.appendToEnd);
     }
 
+    @Override
     public void initAttributes() {
 
         this.lower = "10";

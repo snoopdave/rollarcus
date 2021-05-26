@@ -249,7 +249,7 @@ public final class TestUtils {
         testWeblog.setHandle(handle);
         testWeblog.setEmailAddress("testweblog@dev.null");
         testWeblog.setEditorPage("editor-text.jsp");
-        testWeblog.setBlacklist("");
+        testWeblog.setBannedwordslist("");
         testWeblog.setEditorTheme("basic");
         testWeblog.setLocale("en_US");
         testWeblog.setTimeZone("America/Los_Angeles");
@@ -412,8 +412,7 @@ public final class TestUtils {
     public static void teardownWeblogEntry(String id) throws Exception {
 
         // lookup the entry
-        WeblogEntryManager mgr = WebloggerFactory.getWeblogger()
-                .getWeblogEntryManager();
+        WeblogEntryManager mgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
         WeblogEntry entry = mgr.getWeblogEntry(id);
 
         // remove the entry

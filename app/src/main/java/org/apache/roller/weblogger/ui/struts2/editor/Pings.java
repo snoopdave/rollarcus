@@ -75,6 +75,7 @@ public class Pings extends UIAction {
     }
     
     
+    @Override
     public void myPrepare() {
         
         PingTargetManager pingTargetMgr = WebloggerFactory.getWeblogger().getPingTargetManager();
@@ -101,6 +102,7 @@ public class Pings extends UIAction {
     /*
      * Display the common ping targets with page
      */
+    @Override
     public String execute() {
         
         // load map of enabled auto pings
@@ -165,7 +167,7 @@ public class Pings extends UIAction {
                     WeblogUpdatePinger.PingResult pingResult = WeblogUpdatePinger.sendPing(getPingTarget(), getActionWeblog());
                     if (pingResult.isError()) {
                         log.debug("Ping Result: " + pingResult);
-                        if (pingResult.getMessage() != null && pingResult.getMessage().trim().length() > 0) {
+                        if (pingResult.getMessage() != null && !pingResult.getMessage().isBlank()) {
                             addError("ping.transmittedButError");
                             addError(pingResult.getMessage());
                         } else {
@@ -230,7 +232,7 @@ public class Pings extends UIAction {
             }
         }
 
-        if (isEnabled.size() > 0) {
+        if (!isEnabled.isEmpty()) {
             setPingStatus(isEnabled);
         }
     }

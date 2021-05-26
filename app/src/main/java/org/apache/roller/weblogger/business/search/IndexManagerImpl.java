@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -37,9 +39,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.IOContext;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.lucene.util.Version;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.InitializationException;
 import org.apache.roller.weblogger.business.Weblogger;
@@ -49,7 +48,6 @@ import org.apache.roller.weblogger.business.search.operations.ReIndexEntryOperat
 import org.apache.roller.weblogger.business.search.operations.RebuildWebsiteIndexOperation;
 import org.apache.roller.weblogger.business.search.operations.RemoveEntryOperation;
 import org.apache.roller.weblogger.business.search.operations.RemoveWebsiteIndexOperation;
-import org.apache.roller.weblogger.business.search.operations.WriteToIndexOperation;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.config.WebloggerConfig;
@@ -63,34 +61,22 @@ import org.apache.roller.weblogger.config.WebloggerConfig;
  */
 @com.google.inject.Singleton
 public class IndexManagerImpl implements IndexManager {
-    // ~ Static fields/initializers
-    // =============================================
 
     private IndexReader reader;
     private final Weblogger roller;
 
-    static Log mLogger = LogFactory.getFactory().getInstance(
-            IndexManagerImpl.class);
-
-    // ~ Instance fields
-    // ========================================================
+    private final static Log mLogger = LogFactory.getFactory().getInstance(IndexManagerImpl.class);
 
     private boolean searchEnabled = true;
 
-    File indexConsistencyMarker;
+    private final String indexDir;
 
-    private boolean useRAMIndex = false;
-
-    private RAMDirectory fRAMindex;
-
-    private String indexDir = null;
+    private final File indexConsistencyMarker;
 
     private boolean inconsistentAtStartup = false;
 
-    private ReadWriteLock rwl = new ReentrantReadWriteLock();
+    private final ReadWriteLock rwl = new ReentrantReadWriteLock();
 
-    // ~ Constructors
-    // ===========================================================
 
     /**
      * Creates a new lucene index manager. This should only be created once.
@@ -126,20 +112,17 @@ public class IndexManagerImpl implements IndexManager {
     /**
      * @inheritDoc
      */
+    @Override
     public void initialize() throws InitializationException {
 
         // only initialize the index if search is enabled
         if (this.searchEnabled) {
 
-            // 1. If inconsistency marker exists.
-            // Delete index
-            // 2. if we're using RAM index
-            // load ram index wrapper around index
-            //
+            // delete index if inconsistency marker exists
             if (indexConsistencyMarker.exists()) {
-                getFSDirectory(true);
-                inconsistentAtStartup = true;
                 mLogger.debug("Index inconsistent: marker exists");
+                inconsistentAtStartup = true;
+                deleteIndex();
             } else {
                 try {
                     File makeIndexDir = new File(indexDir);
@@ -155,31 +138,30 @@ public class IndexManagerImpl implements IndexManager {
             }
 
             if (indexExists()) {
-                if (useRAMIndex) {
-                    Directory filesystem = getFSDirectory(false);
-                    try {
-                        fRAMindex = new RAMDirectory(filesystem, IOContext.DEFAULT);
-                    } catch (IOException e) {
-                        mLogger.error("Error creating in-memory index", e);
+
+                // test if the index is readable, if the version is outdated or it fails we rebuild.
+                try {
+                    synchronized(this) {
+                        reader = DirectoryReader.open(getIndexDirectory());
                     }
+                } catch (IOException | IllegalArgumentException ex) {  // IAE for incompatible codecs
+                    mLogger.warn("Failed to open search index, scheduling rebuild.", ex);
+                    inconsistentAtStartup = true;
+                    deleteIndex();
                 }
             } else {
                 mLogger.debug("Creating index");
                 inconsistentAtStartup = true;
-                if (useRAMIndex) {
-                    fRAMindex = new RAMDirectory();
-                    createIndex(fRAMindex);
-                } else {
-                    createIndex(getFSDirectory(true));
-                }
+                deleteIndex();
+                createIndex(getIndexDirectory());
             }
 
-            if (isInconsistentAtStartup()) {
+            if (inconsistentAtStartup) {
                 mLogger.info("Index was inconsistent. Rebuilding index in the background...");
                 try {
                     rebuildWebsiteIndex();
-                } catch (WebloggerException e) {
-                    mLogger.error("ERROR: scheduling re-index operation");
+                } catch (WebloggerException ex) {
+                    mLogger.error("ERROR: scheduling re-index operation", ex);
                 }
             } else {
                 mLogger.info("Index initialized and ready for use.");
@@ -188,48 +170,41 @@ public class IndexManagerImpl implements IndexManager {
 
     }
 
-    // ~ Methods
-    // ================================================================
-
+    @Override
     public void rebuildWebsiteIndex() throws WebloggerException {
-        scheduleIndexOperation(new RebuildWebsiteIndexOperation(roller, this,
-                null));
+        scheduleIndexOperation(new RebuildWebsiteIndexOperation(roller, this, null));
     }
 
+    @Override
     public void rebuildWebsiteIndex(Weblog website) throws WebloggerException {
-        scheduleIndexOperation(new RebuildWebsiteIndexOperation(roller, this,
-                website));
+        scheduleIndexOperation(new RebuildWebsiteIndexOperation(roller, this, website));
     }
 
+    @Override
     public void removeWebsiteIndex(Weblog website) throws WebloggerException {
-        scheduleIndexOperation(new RemoveWebsiteIndexOperation(roller, this,
-                website));
+        scheduleIndexOperation(new RemoveWebsiteIndexOperation(roller, this, website));
     }
 
-    public void addEntryIndexOperation(WeblogEntry entry)
-            throws WebloggerException {
-        AddEntryOperation addEntry = new AddEntryOperation(roller, this, entry);
-        scheduleIndexOperation(addEntry);
+    @Override
+    public void addEntryIndexOperation(WeblogEntry entry) throws WebloggerException {
+        scheduleIndexOperation(new AddEntryOperation(roller, this, entry));
     }
 
-    public void addEntryReIndexOperation(WeblogEntry entry)
-            throws WebloggerException {
-        ReIndexEntryOperation reindex = new ReIndexEntryOperation(roller, this,
-                entry);
-        scheduleIndexOperation(reindex);
+    @Override
+    public void addEntryReIndexOperation(WeblogEntry entry) throws WebloggerException {
+        scheduleIndexOperation(new ReIndexEntryOperation(roller, this, entry));
     }
 
-    public void removeEntryIndexOperation(WeblogEntry entry)
-            throws WebloggerException {
-        RemoveEntryOperation removeOp = new RemoveEntryOperation(roller, this,
-                entry);
-        executeIndexOperationNow(removeOp);
+    @Override
+    public void removeEntryIndexOperation(WeblogEntry entry) throws WebloggerException {
+        executeIndexOperationNow(new RemoveEntryOperation(roller, this, entry));
     }
 
     public ReadWriteLock getReadWriteLock() {
         return rwl;
     }
 
+    @Override
     public boolean isInconsistentAtStartup() {
         return inconsistentAtStartup;
     }
@@ -240,25 +215,25 @@ public class IndexManagerImpl implements IndexManager {
      * @return Analyzer to be used in manipulating the database.
      */
     public static final Analyzer getAnalyzer() {
-        return instantiateAnalyzer(FieldConstants.LUCENE_VERSION);
+        return instantiateAnalyzer();
     }
 
-    private static Analyzer instantiateAnalyzer(final Version luceneVersion) {
+    private static Analyzer instantiateAnalyzer() {
         final String className = WebloggerConfig.getProperty("lucene.analyzer.class");
         try {
             final Class<?> clazz = Class.forName(className);
-            return (Analyzer) ConstructorUtils.invokeConstructor(clazz, luceneVersion);
+            return (Analyzer) ConstructorUtils.invokeConstructor(clazz, null);
         } catch (final ClassNotFoundException e) {
             mLogger.error("failed to lookup analyzer class: " + className, e);
-            return instantiateDefaultAnalyzer(luceneVersion);
+            return instantiateDefaultAnalyzer();
         } catch (final NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             mLogger.error("failed to instantiate analyzer: " + className, e);
-            return instantiateDefaultAnalyzer(luceneVersion);
+            return instantiateDefaultAnalyzer();
         }
     }
 
-    private static Analyzer instantiateDefaultAnalyzer(final Version luceneVersion) {
-        return new StandardAnalyzer(luceneVersion);
+    private static Analyzer instantiateDefaultAnalyzer() {
+        return new StandardAnalyzer();
     }
 
     private void scheduleIndexOperation(final IndexOperation op) {
@@ -277,6 +252,7 @@ public class IndexManagerImpl implements IndexManager {
     /**
      * @param op
      */
+    @Override
     public void executeIndexOperationNow(final IndexOperation op) {
         try {
             // only if search is enabled
@@ -298,7 +274,9 @@ public class IndexManagerImpl implements IndexManager {
         if (reader == null) {
             try {
                 reader = DirectoryReader.open(getIndexDirectory());
-            } catch (IOException e) {
+            } catch (IOException ex) {
+                mLogger.error("Error opening DirectoryReader", ex);
+                throw new RuntimeException(ex);
             }
         }
         return reader;
@@ -306,17 +284,18 @@ public class IndexManagerImpl implements IndexManager {
 
     /**
      * Get the directory that is used by the lucene index. This method will
-     * return null if there is no index at the directory location. If we are
-     * using a RAM index, the directory will be a ram directory.
+     * return null if there is no index at the directory location.
      * 
      * @return Directory The directory containing the index, or null if error.
      */
     public Directory getIndexDirectory() {
-        if (useRAMIndex) {
-            return fRAMindex;
-        } else {
-            return getFSDirectory(false);
+
+        try {
+            return FSDirectory.open(Path.of(indexDir));
+        } catch (IOException e) {
+            mLogger.error("Problem accessing index directory", e);
         }
+        return null;
     }
 
     private boolean indexExists() {
@@ -328,30 +307,18 @@ public class IndexManagerImpl implements IndexManager {
         return false;
     }
 
-    private Directory getFSDirectory(boolean delete) {
-
-        Directory directory = null;
-
-        try {
-
-            directory = FSDirectory.open(new File(indexDir));
-
-            if (delete && directory != null) {
-                // clear old files
-                String[] files = directory.listAll();
-                for (int i = 0; i < files.length; i++) {
-                    File file = new File(indexDir, files[i]);
-                    if (!file.delete()) {
-                        throw new IOException("couldn't delete " + files[i]);
-                    }
-                }
+    
+    private void deleteIndex() {
+        
+        try(FSDirectory directory = FSDirectory.open(Path.of(indexDir))) {
+            
+            String[] files = directory.listAll();
+            for (String file : files) {
+                Files.delete(Path.of(indexDir, file));
             }
-
-        } catch (IOException e) {
-            mLogger.error("Problem accessing index directory", e);
+        } catch (IOException ex) {
+             mLogger.error("Problem accessing index directory", ex);
         }
-
-        return directory;
 
     }
 
@@ -361,72 +328,40 @@ public class IndexManagerImpl implements IndexManager {
         try {
 
             IndexWriterConfig config = new IndexWriterConfig(
-                    FieldConstants.LUCENE_VERSION, new LimitTokenCountAnalyzer(
-                            IndexManagerImpl.getAnalyzer(),
-                            IndexWriterConfig.DEFAULT_TERM_INDEX_INTERVAL));
+                    new LimitTokenCountAnalyzer(
+                            IndexManagerImpl.getAnalyzer(), 128));
 
             writer = new IndexWriter(dir, config);
 
         } catch (IOException e) {
             mLogger.error("Error creating index", e);
         } finally {
-            try {
-                if (writer != null) {
+            if (writer != null) {
+                try {
                     writer.close();
+                } catch (IOException ex) {
+                    mLogger.warn("Unable to close IndexWriter.", ex);
                 }
-            } catch (IOException e) {
             }
         }
     }
 
-    private IndexOperation getSaveIndexOperation() {
-        return new WriteToIndexOperation(this) {
-            public void doRun() {
-                Directory dir = getIndexDirectory();
-                Directory fsdir = getFSDirectory(true);
-                IndexWriter writer = null;
-                try {
-                    IndexWriterConfig config = new IndexWriterConfig(FieldConstants.LUCENE_VERSION,
-                            new LimitTokenCountAnalyzer(IndexManagerImpl.getAnalyzer(),
-                                    IndexWriterConfig.DEFAULT_TERM_INDEX_INTERVAL));
-                    writer = new IndexWriter(fsdir, config);
-                    writer.addIndexes(new Directory[] { dir });
-                    writer.commit();
-                    indexConsistencyMarker.delete();
-                } catch (IOException e) {
-                    mLogger.error("Problem saving index to disk", e);
-                    // Delete the directory, since there was a problem saving the RAM contents
-                    getFSDirectory(true);
-                } finally {
-                    try {
-                        if (writer != null) {
-                            writer.close();
-                        }
-                    } catch (IOException e1) {
-                        mLogger.warn("Unable to close IndexWriter.");
-                    }
-                }
-            }
-        };
-    }
-
+    @Override
     public void release() {
         // no-op
     }
 
+    @Override
     public void shutdown() {
-        if (useRAMIndex) {
-            scheduleIndexOperation(getSaveIndexOperation());
-        } else {
-            indexConsistencyMarker.delete();
-        }
+        
+        indexConsistencyMarker.delete();
 
-        try {
-            if (reader != null) {
+        if (reader != null) {
+            try {
                 reader.close();
+            } catch (IOException ex) {
+                mLogger.error("Unable to close reader.", ex);
             }
-        } catch (IOException e) {
-            // won't happen, since it was
         }
     }
 

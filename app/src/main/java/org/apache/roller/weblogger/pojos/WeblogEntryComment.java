@@ -50,7 +50,6 @@ public class WeblogEntryComment implements Serializable {
     private String    plugins = null;
     private String    contentType = "text/plain";
 
-    
     // associations
     private WeblogEntry weblogEntry = null;
     
@@ -292,6 +291,10 @@ public class WeblogEntryComment implements Serializable {
     public Boolean getApproved() {
         return ApprovalStatus.APPROVED.equals(getStatus());
     }
+
+    public String getEmptyString() {
+        return "";
+    }
     
     
     /**
@@ -306,6 +309,7 @@ public class WeblogEntryComment implements Serializable {
     
     //------------------------------------------------------- Good citizenship
 
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append("{");
@@ -317,6 +321,7 @@ public class WeblogEntryComment implements Serializable {
         return buf.toString();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -332,6 +337,7 @@ public class WeblogEntryComment implements Serializable {
             .isEquals();
     }
     
+    @Override
     public int hashCode() { 
         return new HashCodeBuilder()
             .append(getName())

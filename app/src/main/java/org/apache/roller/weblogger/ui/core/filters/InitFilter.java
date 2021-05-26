@@ -45,6 +45,7 @@ public class InitFilter implements Filter {
 
     private boolean initialized = false;
 
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res,
             FilterChain chain) throws IOException, ServletException {
 
@@ -79,9 +80,11 @@ public class InitFilter implements Filter {
                 request.getRequestURI(), request.getRequestURL().toString());
     }
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
 
+    @Override
     public void destroy() {
     }
 

@@ -17,25 +17,55 @@
 --%>
 <%@ include file="/WEB-INF/jsps/taglibs-struts2.jsp" %>
 
+<script>
+    $(document).ready(function () {
+        // Remove the alert box after 10 seconds
+        $(".alert").delay(10000).slideUp(200, function() {
+            $(this).alert('close');
+        });
+    });
+</script>
+<style>
+    <%-- Alert message should not be bulleted  --%>
+    .alert ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+</style>
+
+
 <%-- Success Messages --%>
 <s:if test="!actionMessages.isEmpty">
-    <div id="messages" class="messages">
+    <div id="messages" class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
         <s:actionmessage />
     </div>
 </s:if>
 
 <%-- Error Messages --%>
 <s:if test="!actionErrors.isEmpty || !fieldErrors.isEmpty">
-    <div id="errors" class="errors">
+    <div id="errors" class="alert alert-danger">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
         <ul>
+
             <s:iterator var="actionError" value="actionErrors">
                 <li><s:property value="#actionError" escapeHtml="false" /></li>
             </s:iterator>
+
             <s:iterator var="fieldErrorName" value="fieldErrors.keySet()">
                 <s:iterator var="fieldErrorValue" value="fieldErrors[#fieldErrorName]">
                     <li><s:property value="#fieldErrorValue" escapeHtml="false" /></li>
                 </s:iterator>
             </s:iterator>
+
         </ul>
     </div>
 </s:if>
+
+<!-- ALERT_END: this comment needed for AJAX error handling -->

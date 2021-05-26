@@ -16,18 +16,21 @@
 
 package org.apache.roller.planet.business;
 
-import junit.framework.TestCase;
-import org.apache.roller.weblogger.TestUtils;
 import org.apache.roller.planet.pojos.Planet;
 import org.apache.roller.planet.pojos.PlanetGroup;
 import org.apache.roller.planet.pojos.Subscription;
+import org.apache.roller.weblogger.TestUtils;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.junit.jupiter.api.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test Subscription functionality.
  */
-public class SubscriptionFunctionalTests extends TestCase {
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+public class SubscriptionFunctionalTests  {
     
     private Planet testPlanet = null;
     private PlanetGroup testGroup1 = null;
@@ -35,8 +38,8 @@ public class SubscriptionFunctionalTests extends TestCase {
     private Subscription testSub1 = null;
     private Subscription testSub2 = null;
     
-    
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         // setup planet
         TestUtils.setupWeblogger();
 
@@ -47,8 +50,8 @@ public class SubscriptionFunctionalTests extends TestCase {
         testSub2 = TestUtils.setupSubscription("subFuncTest2");
     }
     
-    
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         TestUtils.teardownSubscription(testSub1.getId());
         TestUtils.teardownSubscription(testSub2.getId());
         TestUtils.teardownGroup(testGroup1.getId());
@@ -56,7 +59,7 @@ public class SubscriptionFunctionalTests extends TestCase {
         TestUtils.teardownPlanet(testPlanet.getId());
     }
     
-    
+    @Test
     public void testSubscriptionLookups() throws Exception {
         
         PlanetManager mgr = WebloggerFactory.getWeblogger().getPlanetManager();
@@ -76,7 +79,7 @@ public class SubscriptionFunctionalTests extends TestCase {
         assertEquals(2, mgr.getSubscriptionCount());
     }
     
-    
+    @Test
     public void testSubscriptionGroupCRUD() throws Exception {
         
         PlanetManager planet = WebloggerFactory.getWeblogger().getPlanetManager();

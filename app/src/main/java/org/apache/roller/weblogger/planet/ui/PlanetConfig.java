@@ -18,9 +18,6 @@
 
 package org.apache.roller.weblogger.planet.ui;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.RollerException;
@@ -33,8 +30,11 @@ import org.apache.roller.weblogger.config.runtime.PropertyDef;
 import org.apache.roller.weblogger.config.runtime.RuntimeConfigDefs;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
 import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
-import org.apache.struts2.convention.annotation.AllowedMethods;
 import org.apache.struts2.interceptor.ParameterAware;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -64,6 +64,7 @@ public class PlanetConfig extends PlanetUIAction implements ParameterAware {
     }
     
     
+    @Override
     public List<String> requiredGlobalPermissionActions() {
         return Collections.singletonList(GlobalPermission.ADMIN);
     }
@@ -97,7 +98,8 @@ public class PlanetConfig extends PlanetUIAction implements ParameterAware {
         }
     }
 
-    
+
+    @Override
     public String execute() {
         return INPUT;
     }
@@ -176,6 +178,7 @@ public class PlanetConfig extends PlanetUIAction implements ParameterAware {
         return parameters;
     }
 
+    @Override
     public void setParameters(Map parameters) {
         this.parameters = parameters;
     }

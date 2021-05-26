@@ -22,7 +22,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.runnable.RollerTaskWithLeasing;
 
 public class TestTask extends RollerTaskWithLeasing {
-    public static String NAME = "TestTask";
+    public static final String NAME = "TestTask";
 
     public TestTask() {}
 
@@ -30,26 +30,32 @@ public class TestTask extends RollerTaskWithLeasing {
         this.init(TestTask.NAME);
     }
 
+    @Override
     public String getClientId() {
         return "TestTaskClientId";
     }
 
+    @Override
     public Date getStartTime(Date current) {
         return current;
     }
 
+    @Override
     public String getStartTimeDesc() {
         return "immediate";
     }
 
+    @Override
     public int getLeaseTime() {
         return 300;
     }
 
+    @Override
     public int getInterval() {
         return 1800;
     }
 
+    @Override
     public void runTask() {
     }
 

@@ -62,7 +62,7 @@ public class Weblog implements Serializable {
     private String  tagline          = null;
     private Boolean enableBloggerApi = Boolean.TRUE;
     private String  editorPage       = null;
-    private String  blacklist        = null;
+    private String  bannedwordslist  = null;
     private Boolean allowComments    = Boolean.TRUE;
     private Boolean emailComments    = Boolean.FALSE;
     private String  emailAddress     = null;
@@ -121,12 +121,14 @@ public class Weblog implements Serializable {
     
     //------------------------------------------------------- Good citizenship
 
+    @Override
     public String toString() {
         return  "{" + getId() + ", " + getHandle()
         + ", " + getName() + ", " + getEmailAddress()
         + ", " + getLocale() + ", " + getTimeZone() + "}";
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -140,6 +142,7 @@ public class Weblog implements Serializable {
             .isEquals();
     }
     
+    @Override
     public int hashCode() { 
         return new HashCodeBuilder()
             .append(getHandle())
@@ -252,12 +255,12 @@ public class Weblog implements Serializable {
         this.editorPage = editorPage;
     }
     
-    public String getBlacklist() {
-        return this.blacklist;
+    public String getBannedwordslist() {
+        return this.bannedwordslist;
     }
     
-    public void setBlacklist(String blacklist) {
-        this.blacklist = blacklist;
+    public void setBannedwordslist(String bannedwordslist) {
+        this.bannedwordslist = bannedwordslist;
     }
     
     public Boolean getAllowComments() {
@@ -381,7 +384,7 @@ public class Weblog implements Serializable {
         this.setEnableBloggerApi(other.getEnableBloggerApi());
         this.setBloggerCategory(other.getBloggerCategory());
         this.setEditorPage(other.getEditorPage());
-        this.setBlacklist(other.getBlacklist());
+        this.setBannedwordslist(other.getBannedwordslist());
         this.setAllowComments(other.getAllowComments());
         this.setEmailComments(other.getEmailComments());
         this.setEmailAddress(other.getEmailAddress());

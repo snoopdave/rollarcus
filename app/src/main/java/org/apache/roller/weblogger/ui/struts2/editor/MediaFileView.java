@@ -89,6 +89,7 @@ public class MediaFileView extends MediaFileBase {
     /**
      * Prepares view action
      */
+    @Override
     public void myPrepare() {
 
         if (SIZE_FILTER_TYPES == null) {
@@ -193,9 +194,9 @@ public class MediaFileView extends MediaFileBase {
      * @return String The result of the action.
      */
     @SkipValidation
+    @Override
     public String execute() {
-        MediaFileManager manager = WebloggerFactory.getWeblogger()
-                .getMediaFileManager();
+        MediaFileManager manager = WebloggerFactory.getWeblogger().getMediaFileManager();
         try {
             MediaFileDirectory directory;
             if (StringUtils.isNotEmpty(this.directoryId)) {
@@ -206,8 +207,7 @@ public class MediaFileView extends MediaFileBase {
                         getActionWeblog(), this.directoryName);
 
             } else {
-                directory = manager
-                        .getDefaultMediaFileDirectory(getActionWeblog());
+                directory = manager.getDefaultMediaFileDirectory(getActionWeblog());
             }
             this.directoryId = directory.getId();
             this.directoryName = directory.getName();
@@ -258,8 +258,7 @@ public class MediaFileView extends MediaFileBase {
                     .getMediaFileManager();
             if (!StringUtils.isEmpty(viewDirectoryId)) {
                 setDirectoryId(viewDirectoryId);
-                setCurrentDirectory(manager
-                        .getMediaFileDirectory(viewDirectoryId));
+                setCurrentDirectory(manager.getMediaFileDirectory(viewDirectoryId));
             }
         } catch (WebloggerException ex) {
             log.error("Error looking up directory", ex);
@@ -279,11 +278,9 @@ public class MediaFileView extends MediaFileBase {
         if (valSuccess) {
             MediaFileFilter filter = new MediaFileFilter();
             bean.copyTo(filter);
-            MediaFileManager manager = WebloggerFactory.getWeblogger()
-                    .getMediaFileManager();
+            MediaFileManager manager = WebloggerFactory.getWeblogger().getMediaFileManager();
             try {
-                List<MediaFile> rawResults = manager.searchMediaFiles(
-                        getActionWeblog(), filter);
+                List<MediaFile> rawResults = manager.searchMediaFiles(getActionWeblog(), filter);
                 boolean hasMore = false;
                 List<MediaFile> results = new ArrayList<MediaFile>();
                 results.addAll(rawResults);
@@ -329,8 +326,7 @@ public class MediaFileView extends MediaFileBase {
     public String deleteFolder() {
 
         try {
-            MediaFileManager manager = WebloggerFactory.getWeblogger()
-                    .getMediaFileManager();
+            MediaFileManager manager = WebloggerFactory.getWeblogger().getMediaFileManager();
             if (directoryId != null) {
                 log.debug("Deleting media file folder - " + directoryId + " ("
                         + directoryName + ")");

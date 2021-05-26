@@ -105,21 +105,14 @@ public class Comments extends UIAction {
                 setQueryEntry(wmgr.getWeblogEntry(getBean().getEntryId()));
             }
 
-            CommentSearchCriteria csc = new CommentSearchCriteria();
-            csc.setWeblog(getActionWeblog());
-            csc.setEntry(getQueryEntry());
-            csc.setSearchText(getBean().getSearchString());
-            csc.setStartDate(getBean().getStartDate());
-            csc.setEndDate(getBean().getEndDate());
-            csc.setStatus(getBean().getStatus());
-            csc.setReverseChrono(true);
+            CommentSearchCriteria csc = getCommentSearchCriteria();
             csc.setOffset(getBean().getPage() * COUNT);
             csc.setMaxResults(COUNT + 1);
 
             List<WeblogEntryComment> rawComments = wmgr.getComments(csc);
             comments = new ArrayList<WeblogEntryComment>();
             comments.addAll(rawComments);
-            if (comments.size() > 0) {
+            if (!comments.isEmpty()) {
                 if (comments.size() > COUNT) {
                     comments.remove(comments.size() - 1);
                     hasMore = true;
@@ -162,13 +155,11 @@ public class Comments extends UIAction {
             params.put("bean.approvedString", getBean().getApprovedString());
         }
 
-        return WebloggerFactory
-                .getWeblogger()
-                .getUrlStrategy()
-                .getActionURL("comments", "/roller-ui/authoring",
-                        getActionWeblog().getHandle(), params, false);
+        return WebloggerFactory.getWeblogger().getUrlStrategy()
+            .getActionURL("comments", "/roller-ui/authoring", getActionWeblog().getHandle(), params, false);
     }
 
+    @Override
     public String execute() {
 
         // load list of comments from query
@@ -192,16 +183,9 @@ public class Comments extends UIAction {
         getBean().loadCheckboxes(getPager().getItems());
 
         try {
-            WeblogEntryManager wmgr = WebloggerFactory.getWeblogger()
-                    .getWeblogEntryManager();
+            WeblogEntryManager wmgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
 
-            CommentSearchCriteria csc = new CommentSearchCriteria();
-            csc.setWeblog(getActionWeblog());
-            csc.setSearchText(getBean().getSearchString());
-            csc.setStartDate(getBean().getStartDate());
-            csc.setEndDate(getBean().getEndDate());
-            csc.setStatus(getBean().getStatus());
-            csc.setReverseChrono(true);
+            CommentSearchCriteria csc = getCommentSearchCriteria();
 
             List<WeblogEntryComment> allMatchingComments = wmgr.getComments(csc);
             if (allMatchingComments.size() > COUNT) {
@@ -216,28 +200,33 @@ public class Comments extends UIAction {
         return LIST;
     }
 
+    private CommentSearchCriteria getCommentSearchCriteria() {
+        CommentSearchCriteria commentSearchCriteria = new CommentSearchCriteria();
+        commentSearchCriteria.setWeblog(getActionWeblog());
+        commentSearchCriteria.setEntry(getQueryEntry());
+        commentSearchCriteria.setSearchText(getBean().getSearchString());
+        commentSearchCriteria.setStartDate(getBean().getStartDate());
+        commentSearchCriteria.setEndDate(getBean().getEndDate());
+        commentSearchCriteria.setStatus(getBean().getStatus());
+        commentSearchCriteria.setReverseChrono(true);
+        return commentSearchCriteria;
+    }
+
+
     /**
      * Bulk delete all comments matching query criteria.
      */
     public String delete() {
 
         try {
-            WeblogEntryManager wmgr = WebloggerFactory.getWeblogger()
-                    .getWeblogEntryManager();
+            WeblogEntryManager wmgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
 
             // if search is enabled, we will need to re-index all entries with
             // comments that have been deleted, so build a list of those entries
             Set<WeblogEntry> reindexEntries = new HashSet<WeblogEntry>();
             if (WebloggerConfig.getBooleanProperty("search.enabled")) {
 
-                CommentSearchCriteria csc = new CommentSearchCriteria();
-                csc.setWeblog(getActionWeblog());
-                csc.setEntry(getQueryEntry());
-                csc.setSearchText(getBean().getSearchString());
-                csc.setStartDate(getBean().getStartDate());
-                csc.setEndDate(getBean().getEndDate());
-                csc.setStatus(getBean().getStatus());
-                csc.setReverseChrono(true);
+                CommentSearchCriteria csc = getCommentSearchCriteria();
 
                 List<WeblogEntryComment> targetted = wmgr.getComments(csc);
                 for (WeblogEntryComment comment : targetted) {
@@ -251,8 +240,7 @@ public class Comments extends UIAction {
 
             // if we've got entries to reindex then do so
             if (!reindexEntries.isEmpty()) {
-                IndexManager imgr = WebloggerFactory.getWeblogger()
-                        .getIndexManager();
+                IndexManager imgr = WebloggerFactory.getWeblogger().getIndexManager();
                 for (WeblogEntry entry : reindexEntries) {
                     imgr.addEntryReIndexOperation(entry);
                 }
@@ -280,8 +268,7 @@ public class Comments extends UIAction {
     public String update() {
 
         try {
-            WeblogEntryManager wmgr = WebloggerFactory.getWeblogger()
-                    .getWeblogEntryManager();
+            WeblogEntryManager wmgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
 
             List<WeblogEntryComment> flushList = new ArrayList<WeblogEntryComment>();
 
@@ -292,7 +279,7 @@ public class Comments extends UIAction {
 
             // delete all comments with delete box checked
             List<String> deletes = Arrays.asList(getBean().getDeleteComments());
-            if (deletes.size() > 0) {
+            if (!deletes.isEmpty()) {
                 log.debug("Processing deletes - " + deletes.size());
 
                 WeblogEntryComment deleteComment = null;
@@ -310,8 +297,7 @@ public class Comments extends UIAction {
             }
 
             // loop through IDs of all comments displayed on page
-            List<String> approvedIds = Arrays.asList(getBean()
-                    .getApprovedComments());
+            List<String> approvedIds = Arrays.asList(getBean().getApprovedComments());
             List<String> spamIds = Arrays.asList(getBean().getSpamComments());
             log.debug(spamIds.size() + " comments marked as spam");
 
@@ -426,14 +412,10 @@ public class Comments extends UIAction {
         List<KeyValueObject> opts = new ArrayList<KeyValueObject>();
 
         opts.add(new KeyValueObject("ALL", getText("generic.all")));
-        opts.add(new KeyValueObject("ONLY_PENDING",
-                getText("commentManagement.onlyPending")));
-        opts.add(new KeyValueObject("ONLY_APPROVED",
-                getText("commentManagement.onlyApproved")));
-        opts.add(new KeyValueObject("ONLY_DISAPPROVED",
-                getText("commentManagement.onlyDisapproved")));
-        opts.add(new KeyValueObject("ONLY_SPAM",
-                getText("commentManagement.onlySpam")));
+        opts.add(new KeyValueObject("ONLY_PENDING", getText("commentManagement.onlyPending")));
+        opts.add(new KeyValueObject("ONLY_APPROVED", getText("commentManagement.onlyApproved")));
+        opts.add(new KeyValueObject("ONLY_DISAPPROVED", getText("commentManagement.onlyDisapproved")));
+        opts.add(new KeyValueObject("ONLY_SPAM", getText("commentManagement.onlySpam")));
 
         return opts;
     }

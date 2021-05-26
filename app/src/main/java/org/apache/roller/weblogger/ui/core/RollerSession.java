@@ -49,11 +49,16 @@ public class RollerSession
     // the id of the user represented by this session
     private String userName = null;
     
-    private static Log log = LogFactory.getLog(RollerSession.class);
+    private static final Log log;
     
     public static final String ROLLER_SESSION = "org.apache.roller.weblogger.rollersession";
     public static final String ERROR_MESSAGE   = "rollererror_message";
     public static final String STATUS_MESSAGE  = "rollerstatus_message";
+    
+    static{
+        WebloggerConfig.init(); // must be called before calls to logging APIs
+        log = LogFactory.getLog(RollerSession.class);
+    }
    
     /**
      * Get RollerSession from request (and add user if not already present).
@@ -122,18 +127,21 @@ public class RollerSession
     
     
     /** Create session's Roller instance */
+    @Override
     public void sessionCreated(HttpSessionEvent se) {
         RollerSession rollerSession = new RollerSession();
         se.getSession().setAttribute(ROLLER_SESSION, rollerSession);
     }
-    
-    
+
+
+    @Override
     public void sessionDestroyed(HttpSessionEvent se) {
         clearSession(se);
     }
     
     
     /** Init session as if it was new */
+    @Override
     public void sessionDidActivate(HttpSessionEvent se) {
     }
     
@@ -144,6 +152,7 @@ public class RollerSession
      * to call it when sessions are saved and then restored at some later
      * point in time.
      */
+    @Override
     public void sessionWillPassivate(HttpSessionEvent se) {
         clearSession(se);
     }

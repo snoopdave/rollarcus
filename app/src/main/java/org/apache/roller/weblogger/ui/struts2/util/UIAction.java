@@ -19,7 +19,7 @@
 package org.apache.roller.weblogger.ui.struts2.util;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
@@ -80,10 +80,12 @@ public abstract class UIAction extends ActionSupport
 
     protected String salt = null;
     
+    @Override
     public void myPrepare() {
         // no-op
     }
 	
+    @Override
 	public void setRequest(Map<String, Object> map) {
 		this.salt = (String) map.get("salt");
 	}
@@ -102,21 +104,25 @@ public abstract class UIAction extends ActionSupport
     }
 
     // default action permissions, user is required
+    @Override
     public boolean isUserRequired() {
         return true;
     }
     
     
     // default action permissions, weblog is required
+    @Override
     public boolean isWeblogRequired() {
         return true;
     }
     
     // Default is ADMIN for safety, if a subclasser forgets to override this only admins can use.
+    @Override
     public List<String> requiredWeblogPermissionActions() {
         return Collections.singletonList(WeblogPermission.ADMIN);
     }
 
+    @Override
     public List<String> requiredGlobalPermissionActions() {
         return Collections.singletonList(GlobalPermission.LOGIN);
     }
@@ -379,8 +385,9 @@ public abstract class UIAction extends ActionSupport
     
     public List<KeyValueObject> getCommentDaysList() {
         
-        List<KeyValueObject> opts = new ArrayList<KeyValueObject>();
-        
+        List<KeyValueObject> opts = new ArrayList<>();
+
+        opts.add(new KeyValueObject(-1, getText("weblogEdit.commentsNotAllowed")));
         opts.add(new KeyValueObject(0, getText("weblogEdit.unlimitedCommentDays")));
         opts.add(new KeyValueObject(3, getText("weblogEdit.days3")));
         opts.add(new KeyValueObject(7, getText("weblogEdit.days7")));

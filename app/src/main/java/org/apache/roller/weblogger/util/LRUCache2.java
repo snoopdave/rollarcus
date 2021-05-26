@@ -121,6 +121,7 @@ public class LRUCache2
     }
 
     public static class DefaultEnvironment implements Environment {
+        @Override
         public long getCurrentTimeInMillis()
         {
             return System.currentTimeMillis();
@@ -160,6 +161,7 @@ public class LRUCache2
             this.maxsize = maxsize;
         }
 
+        @Override
         protected boolean removeEldestEntry(Map.Entry eldest)
         {
             return this.size() > this.maxsize;

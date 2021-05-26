@@ -31,6 +31,11 @@
     </filter>
 
     <filter>
+        <filter-name>SpringFirewallExceptionFilter</filter-name>
+        <filter-class>org.apache.roller.weblogger.ui.core.filters.SpringFirewallExceptionFilter</filter-class>
+    </filter>
+
+    <filter>
         <filter-name>PersistenceSessionFilter</filter-name>
         <filter-class>org.apache.roller.weblogger.ui.core.filters.PersistenceSessionFilter</filter-class>
     </filter>
@@ -53,11 +58,6 @@
     <filter>
         <filter-name>IPBanFilter</filter-name>
         <filter-class>org.apache.roller.weblogger.ui.core.filters.IPBanFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>SchemeEnforcementFilter</filter-name>
-        <filter-class>org.apache.roller.weblogger.ui.core.filters.SchemeEnforcementFilter</filter-class>
     </filter>
 
     <filter>
@@ -103,12 +103,13 @@
         <url-pattern>/roller-ui/rendering/trackback/*</url-pattern>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
-
-    <!-- Scheme enforcement.  Only here until we get Spring Security scheme enforcement working -->
+    
+    <!-- keep right above spring firewall filter, see source for details -->
     <filter-mapping>
-        <filter-name>SchemeEnforcementFilter</filter-name>
+        <filter-name>SpringFirewallExceptionFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
     <!-- Spring Security filters - controls secure access to different parts of Roller -->
@@ -165,6 +166,10 @@
         <url-pattern>*.rol</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/struts/*</url-pattern>
     </filter-mapping>
 
     <!-- Context Listeners -->

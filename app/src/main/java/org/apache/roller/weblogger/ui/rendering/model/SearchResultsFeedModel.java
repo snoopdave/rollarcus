@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
@@ -79,10 +79,12 @@ public class SearchResultsFeedModel implements Model {
 
 	private int entryCount = 0;
 
+    @Override
 	public String getModelName() {
 		return "model";
 	}
 
+    @Override
 	public void init(Map initData) throws WebloggerException {
 
 		// we expect the init data to contain a weblogRequest object
@@ -222,7 +224,7 @@ public class SearchResultsFeedModel implements Model {
 				}
 			}
 
-			if (categorySet.size() > 0) {
+			if (!categorySet.isEmpty()) {
 				this.categories = categorySet;
 			}
 		} catch (IOException e) {
@@ -240,7 +242,7 @@ public class SearchResultsFeedModel implements Model {
 	public String getTerm() {
 		String query =feedRequest.getTerm() ;
 		return (query == null) 
-			? "" : StringEscapeUtils.escapeXml(Utilities.escapeHTML(query));
+			? "" : StringEscapeUtils.escapeXml11(Utilities.escapeHTML(query));
 	}
 
 	public int getHits() {

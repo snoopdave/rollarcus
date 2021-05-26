@@ -27,7 +27,7 @@ import org.apache.roller.weblogger.util.Utilities;
 //import org.apache.roller.util.UtilitiesModel;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.texen.Generator;
+//import org.apache.velocity.texen.Generator;
 
 
 /**
@@ -43,6 +43,7 @@ public class GeneratePlanetTask extends PlanetTask {
     private static Log log = LogFactory.getLog(GeneratePlanetTask.class);
     
     
+    @Override
     public void run() {
         try {            
 //          PlanetManager planetManager = WebloggerFactory.getWeblogger().getPlanetManager();
@@ -88,6 +89,8 @@ public class GeneratePlanetTask extends PlanetTask {
             }
             
             // Generate files: execute control template
+            throw new UnsupportedOperationException("TODO: upgrade to velocity 2.x");
+            /* 
             Generator generator = Generator.getInstance();
             generator.setVelocityEngine(engine);
             generator.setOutputEncoding("UTF-8");
@@ -96,7 +99,7 @@ public class GeneratePlanetTask extends PlanetTask {
             generator.setTemplatePath(templateDir);
             generator.parse(mainPage, context);
             generator.shutdown();
-            
+            */
         } catch (Exception e) {
             log.error("ERROR generating planet", e);
         }

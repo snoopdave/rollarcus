@@ -88,6 +88,7 @@ public class WeblogEntriesListPager extends AbstractPager {
     }
     
     
+    @Override
     public List<WeblogEntryWrapper> getItems() {
         
         if (entries == null) {
@@ -140,6 +141,7 @@ public class WeblogEntriesListPager extends AbstractPager {
     }
     
     
+    @Override
     public boolean hasMoreItems() {
         return more;
     }
@@ -149,7 +151,7 @@ public class WeblogEntriesListPager extends AbstractPager {
         if (lastUpdated == null) {
             // feeds are sorted by pubtime, so first might not be last updated
             List<WeblogEntryWrapper> items = getItems();
-            if (getItems() != null && getItems().size() > 0) {
+            if (getItems() != null && !getItems().isEmpty()) {
                 Timestamp newest = (getItems().get(0)).getUpdateTime();
                 for (WeblogEntryWrapper e : items) {
                     if (e.getUpdateTime().after(newest)) {

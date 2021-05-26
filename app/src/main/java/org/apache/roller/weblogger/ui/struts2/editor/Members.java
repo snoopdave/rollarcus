@@ -58,6 +58,7 @@ public class Members extends UIAction implements ParameterAware {
         this.pageTitle = "memberPermissions.title";
     }
     
+    @Override
     public String execute() {
         log.debug("Showing weblog members page");
         return LIST;
@@ -168,6 +169,7 @@ public class Members extends UIAction implements ParameterAware {
         return parameters;
     }
 
+    @Override
     public void setParameters(Map parameters) {
         this.parameters = parameters;
     }

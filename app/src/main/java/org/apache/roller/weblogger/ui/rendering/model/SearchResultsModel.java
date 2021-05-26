@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
@@ -78,6 +78,7 @@ public class SearchResultsModel extends PageModel {
 	private boolean websiteSpecificSearch = true;
 	private String errorMessage = null;
 
+	@Override
 	public void init(Map initData) throws WebloggerException {
 
 		// we expect the init data to contain a searchRequest object
@@ -152,16 +153,19 @@ public class SearchResultsModel extends PageModel {
 	/**
 	 * Is this page showing search results?
 	 */
+	@Override
 	public boolean isSearchResults() {
 		return true;
 	}
 
 	// override page model and return search results pager
+	@Override
 	public WeblogEntriesPager getWeblogEntriesPager() {
 		return pager;
 	}
 
 	// override page model and return search results pager
+	@Override
 	public WeblogEntriesPager getWeblogEntriesPager(String category) {
 		return pager;
 	}
@@ -222,7 +226,7 @@ public class SearchResultsModel extends PageModel {
 				}
 			}
 
-			if (categorySet.size() > 0) {
+			if (!categorySet.isEmpty()) {
 				this.categories = categorySet;
 			}
 		} catch (IOException e) {
@@ -285,6 +289,7 @@ public class SearchResultsModel extends PageModel {
 		return searchRequest.getWeblogCategoryName();
 	}
 
+	@Override
 	public WeblogCategoryWrapper getWeblogCategory() {
 		if (searchRequest.getWeblogCategory() != null) {
 			return WeblogCategoryWrapper.wrap(

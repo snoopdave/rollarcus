@@ -1,10 +1,10 @@
 # docs/README.md
 
-In this directory you'll find Roller docs in Open Office (ODF) format, various examples and test plans.
+In this directory you'll find Roller docs in AsciiDoc format, various examples and test plans.
 
-* `roller-install-guide.odt` - How to install Roller
-* `roller-user-guide.odt` - How to use Roller
-* `roller-template-guide.odt` - How to create Roller templates and themes
+* `roller-install-guide.adoc` - How to install Roller
+* `roller-user-guide.adoc` - How to use Roller
+* `roller-template-guide.adoc` - How to create Roller templates and themes
 * `examples/` - example configuration and script files
 * `testing/` - Various test scripts
 

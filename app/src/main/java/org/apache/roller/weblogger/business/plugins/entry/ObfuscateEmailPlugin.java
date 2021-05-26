@@ -18,7 +18,7 @@
 
 package org.apache.roller.weblogger.business.plugins.entry;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
@@ -45,19 +45,23 @@ public class ObfuscateEmailPlugin implements WeblogEntryPlugin {
     }
     
     
+    @Override
     public String getName() {
         return name;
     }
     
     
+    @Override
     public String getDescription() {
         return StringEscapeUtils.escapeEcmaScript(description);
     }
     
     
+    @Override
     public void init(Weblog website) throws WebloggerException {}
     
     
+    @Override
     public String render(WeblogEntry entry, String str) {
         return RegexUtil.encodeEmail(str);
     }

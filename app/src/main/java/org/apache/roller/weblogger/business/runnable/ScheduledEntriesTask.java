@@ -39,45 +39,50 @@ import org.apache.roller.weblogger.util.cache.CacheManager;
  */
 public class ScheduledEntriesTask extends RollerTaskWithLeasing {
     private static Log log = LogFactory.getLog(ScheduledEntriesTask.class);
-    
-    public static String NAME = "ScheduledEntriesTask";
 
-    
+    public static final String NAME = "ScheduledEntriesTask";
+
+
     // a unique id for this specific task instance
     // this is meant to be unique for each client in a clustered environment
     private String clientId = null;
-    
+
     // a String description of when to start this task
     private String startTimeDesc = "immediate";
-    
+
     // interval at which the task is run, default is once per minute
     private int interval = 1;
-    
+
     // lease time given to task lock, default is 30 minutes
     private int leaseTime = RollerTaskWithLeasing.DEFAULT_LEASE_MINS;
-    
 
+
+    @Override
     public String getClientId() {
         return clientId;
     }
-    
+
+    @Override
     public Date getStartTime(Date currentTime) {
         return getAdjustedTime(currentTime, startTimeDesc);
     }
-    
+
+    @Override
     public String getStartTimeDesc() {
         return startTimeDesc;
     }
-    
+
+    @Override
     public int getInterval() {
         return this.interval;
     }
-    
+
+    @Override
     public int getLeaseTime() {
         return this.leaseTime;
     }
-    
-    
+
+
     public void init() throws WebloggerException {
         this.init(ScheduledEntriesTask.NAME);
     }
@@ -88,19 +93,19 @@ public class ScheduledEntriesTask extends RollerTaskWithLeasing {
 
         // get relevant props
         Properties props = this.getTaskProperties();
-        
+
         // extract clientId
         String client = props.getProperty("clientId");
         if(client != null) {
             this.clientId = client;
         }
-        
+
         // extract start time
         String startTimeStr = props.getProperty("startTime");
         if(startTimeStr != null) {
             this.startTimeDesc = startTimeStr;
         }
-        
+
         // extract interval
         String intervalStr = props.getProperty("interval");
         if(intervalStr != null) {
@@ -110,7 +115,7 @@ public class ScheduledEntriesTask extends RollerTaskWithLeasing {
                 log.warn("Invalid interval: "+intervalStr);
             }
         }
-        
+
         // extract lease time
         String leaseTimeStr = props.getProperty("leaseTime");
         if(leaseTimeStr != null) {
@@ -121,30 +126,31 @@ public class ScheduledEntriesTask extends RollerTaskWithLeasing {
             }
         }
     }
-    
-    
+
+
     /**
      * Execute the task.
      */
+    @Override
     public void runTask() {
-        
+
         log.debug("task started");
-        
+
         try {
             WeblogEntryManager wMgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
             IndexManager searchMgr = WebloggerFactory.getWeblogger().getIndexManager();
-            
+
             Date now = new Date();
-            
+
             log.debug("looking up scheduled entries older than " + now);
-            
+
             // get all published entries older than current time
             WeblogEntrySearchCriteria wesc = new WeblogEntrySearchCriteria();
             wesc.setEndDate(now);
             wesc.setStatus(PubStatus.SCHEDULED);
             List<WeblogEntry> scheduledEntries = wMgr.getWeblogEntries(wesc);
             log.debug("promoting "+scheduledEntries.size()+" entries to PUBLISHED state");
-            
+
             for (WeblogEntry entry : scheduledEntries) {
                 entry.setStatus(PubStatus.PUBLISHED);
                 entry.setRefreshAggregates(true);
@@ -153,7 +159,7 @@ public class ScheduledEntriesTask extends RollerTaskWithLeasing {
 
             // commit the changes
             WebloggerFactory.getWeblogger().flush();
-            
+
             // take a second pass to trigger reindexing and cache invalidations
             // this is because we need the updated entries flushed first
             for (WeblogEntry entry : scheduledEntries) {
@@ -171,12 +177,12 @@ public class ScheduledEntriesTask extends RollerTaskWithLeasing {
             // always release
             WebloggerFactory.getWeblogger().release();
         }
-        
+
         log.debug("task completed");
-        
+
     }
-    
-    
+
+
     /**
      * Main method so that this task may be run from outside the webapp.
      */
@@ -191,5 +197,5 @@ public class ScheduledEntriesTask extends RollerTaskWithLeasing {
             System.exit(-1);
         }
     }
-    
+
 }

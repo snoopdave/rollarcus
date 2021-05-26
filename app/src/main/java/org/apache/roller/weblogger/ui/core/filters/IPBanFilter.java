@@ -42,12 +42,14 @@ public class IPBanFilter implements Filter {
     private static Log log = LogFactory.getLog(IPBanFilter.class);
     
     
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         
         log.info("INIT IPBanFilter");
     }
     
     
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         
@@ -64,7 +66,7 @@ public class IPBanFilter implements Filter {
         }
     }
     
-    
+    @Override
     public void destroy() {}
     
 }

@@ -106,6 +106,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public Map<Date, List<WeblogEntryWrapper>> getEntries() {
         Date date = parseDate(dateString);
         Calendar cal = Calendar.getInstance(weblog.getTimeZoneInstance());
@@ -145,7 +146,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
                     }
                     
                     // done with that day, put it in the map
-                    if (wrapped.size() > 0) {
+                    if (!wrapped.isEmpty()) {
                         entries.put(entry.getKey(), wrapped);
                     }
                 }
@@ -159,16 +160,19 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getHomeLink() {
         return createURL(0, 0, weblog, locale, pageLink, null, null, catName, tags);
     }
     
     
+    @Override
     public String getHomeName() {
         return messageUtils.getString("weblogEntriesPager.day.home");
     }
     
     
+    @Override
     public String getNextLink() {
         if (more) {
             return createURL(page, 1, weblog, locale, pageLink, null, dateString, catName, tags);
@@ -177,6 +181,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getNextName() {
         if (getNextLink() != null) {
             return messageUtils.getString("weblogEntriesPager.day.next", new Object[] {dayFormat.format(day)});
@@ -185,6 +190,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getPrevLink() {
         if (page > 0) {
             return createURL(page, -1, weblog, locale, pageLink, null, dateString, catName, tags);
@@ -193,6 +199,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getPrevName() {
         if (getPrevLink() != null) {
             return messageUtils.getString("weblogEntriesPager.day.prev", new Object[] {dayFormat.format(day)});
@@ -200,7 +207,8 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
         return null;
     }
     
-    
+
+    @Override
     public String getNextCollectionLink() {
         if (nextDay != null) {
             String next = DateUtil.format8chars(nextDay, weblog.getTimeZoneInstance());
@@ -210,6 +218,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getNextCollectionName() {
         if (nextDay != null) {
             return messageUtils.getString("weblogEntriesPager.day.nextCollection", new Object[] {dayFormat.format(nextDay)});
@@ -218,6 +227,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getPrevCollectionLink() {
         if (prevDay != null) {
             String prev = DateUtil.format8chars(prevDay, weblog.getTimeZoneInstance());
@@ -227,6 +237,7 @@ public class WeblogEntriesDayPager extends AbstractWeblogEntriesPager {
     }
     
     
+    @Override
     public String getPrevCollectionName() {
         if (prevDay != null) {
             return messageUtils.getString("weblogEntriesPager.day.prevCollection", new Object[] {dayFormat.format(prevDay)});

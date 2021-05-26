@@ -85,6 +85,7 @@ public class WeblogPermission extends ObjectPermission implements Serializable {
         return null;
     }
 
+    @Override
     public boolean implies(Permission perm) {
         if (perm instanceof WeblogPermission) {
             WeblogPermission rperm = (WeblogPermission)perm;
@@ -115,6 +116,7 @@ public class WeblogPermission extends ObjectPermission implements Serializable {
         return false;
     }
     
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("GlobalPermission: ");
@@ -124,6 +126,7 @@ public class WeblogPermission extends ObjectPermission implements Serializable {
         return sb.toString();
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -139,6 +142,7 @@ public class WeblogPermission extends ObjectPermission implements Serializable {
                 .isEquals();
     }
 
+    @Override
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(getUserName())

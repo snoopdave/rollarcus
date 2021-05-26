@@ -58,6 +58,7 @@ public class BookmarkEdit extends UIAction {
         this.pageTitle = pageTitle;
     }
 
+    @Override
     public void myPrepare() {
         if (StringUtils.isEmpty(bean.getId())) {
             // Create and initialize new, not-yet-saved WeblogBookmark
@@ -85,6 +86,7 @@ public class BookmarkEdit extends UIAction {
     
     
     @SkipValidation
+    @Override
     public String execute() {
         if (!isAdd()) {
             // load bean with database values during initial load
@@ -97,15 +99,14 @@ public class BookmarkEdit extends UIAction {
     public String save() {
         myValidate();
 
-        if(!hasActionErrors()) {
+        if (!hasActionErrors()) {
             try {
                 getBean().copyTo(bookmark);
                 BookmarkManager bmgr = WebloggerFactory.getWeblogger().getBookmarkManager();
                 bmgr.saveBookmark(bookmark);
                 WebloggerFactory.getWeblogger().flush();
                 CacheManager.invalidate(bookmark);
-                addMessage(isAdd() ? "bookmarkForm.created" : "bookmarkForm.updated",
-                        getBookmark().getName());
+                addMessage(isAdd() ? "bookmarkForm.created" : "bookmarkForm.updated", getBookmark().getName());
                 return SUCCESS;
 
             } catch(Exception ex) {
@@ -149,4 +150,5 @@ public class BookmarkEdit extends UIAction {
     public WeblogBookmark getBookmark() {
         return bookmark;
     }
+
 }

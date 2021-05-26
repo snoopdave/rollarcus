@@ -20,15 +20,15 @@
        xmlns:beans="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
           http://www.springframework.org/schema/security
-          http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+          http://www.springframework.org/schema/security/spring-security-5.4.xsd">
 
     <http pattern="/images/**" security="none"/>
     <http pattern="/scripts/**" security="none"/>
     <http pattern="/styles/**" security="none"/>
 
-    <http auto-config="false" access-decision-manager-ref="accessDecisionManager">
+    <http auto-config="false" access-decision-manager-ref="accessDecisionManager" use-expressions="false">
         <intercept-url pattern="/roller-ui/login-redirect**" access="admin,editor"/>
         <intercept-url pattern="/roller-ui/profile**" access="admin,editor"/>
         <intercept-url pattern="/roller-ui/createWeblog**" access="admin,editor"/>
@@ -38,22 +38,28 @@
         <intercept-url pattern="/rewrite-status*" access="admin"/>
 
         <form-login login-page="/roller-ui/login.rol"
+                    username-parameter="j_username" 
+                    password-parameter="j_password" 
                     authentication-failure-url="/roller-ui/login.rol?error=true"
                     login-processing-url="/roller_j_security_check"/>
 
-        <remember-me user-service-ref="rollerUserService"
+        <remember-me services-ref="rollerRememberMeServices"
                      key="715F2448-3176-11DD-ABC6-9CD955D89593"/>
 
         <custom-filter ref="openidAuthenticationProcessingFilter" position="OPENID_FILTER"/>
+        
+        <!-- roller already uses its own salt based CSRF protection-->
+        <csrf disabled="true"/>
+        
+        <!-- some roller UI (i.e. media file editor) uses iframes -->
+        <headers>
+            <frame-options policy="SAMEORIGIN"/>
+        </headers>
     </http>
 
     <beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <beans:constructor-arg ref="roleVoter"/>
         <beans:property name="allowIfAllAbstainDecisions" value="false"/>
-        <beans:property name="decisionVoters">
-            <beans:list>
-                <beans:ref bean="roleVoter"/>
-            </beans:list>
-        </beans:property>
     </beans:bean>
 
     <beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
@@ -63,19 +69,26 @@
     <!-- Read users from Roller API -->
     <authentication-manager alias='rollerAuthenticationManager'>
         <authentication-provider ref="rememberMeAuthenticationProvider"/>
+
         <!-- Uncomment one of the three below, based on whether database, LDAP, or
              OpenID authentication is desired. -->
         <authentication-provider user-service-ref="rollerUserService"/>
-        <!--authentication-provider ref="ldapAuthProvider"/>
-        <authentication-provider ref="openIDAuthProvider"/-->
+        <!--
+        <authentication-provider ref="ldapAuthProvider" />
+        <authentication-provider ref="openIDAuthProvider"/>
+        -->
     </authentication-manager>
 
     <beans:bean id="rollerUserService"
                 class="org.apache.roller.weblogger.ui.core.security.RollerUserDetailsService"/>
 
+    <beans:bean id="rollerRememberMeServices"
+                class="org.apache.roller.weblogger.ui.core.security.RollerRememberMeServices">
+        <beans:constructor-arg name="userDetailsService" ref="rollerUserService"/>
+    </beans:bean>
+
     <beans:bean id="rememberMeAuthenticationProvider"
-                class="org.springframework.security.authentication.RememberMeAuthenticationProvider">
-        <beans:property name="key" value="springRocks"/>
+                class="org.apache.roller.weblogger.ui.core.security.RollerRememberMeAuthenticationProvider">
     </beans:bean>
 
     <beans:bean id = "openIDAuthProvider" class="org.springframework.security.openid.OpenIDAuthenticationProvider">
@@ -113,10 +126,10 @@
         </beans:property>
     </beans:bean>
 
-    <!-- Uncomment & customize below beans if using LDAP -->
-    <!--beans:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
-        <beans:constructor-arg value="ldap://localhost:10389/dc=example,dc=com" />
-        <beans:property name="userDn" value="uid=admin,ou=system" />
+    <!-- Uncomment & customize below beans if using LDAP
+    <beans:bean id="contextSource" class="org.springframework.security.ldap.DefaultSpringSecurityContextSource">
+        <beans:constructor-arg value="ldap://localhost:389/dc=example,dc=com" />
+        <beans:property name="userDn" value="uid=admin" />
         <beans:property name="password" value="secret" />
     </beans:bean>
 
@@ -142,6 +155,7 @@
         <beans:constructor-arg index="1" value="(uid={0})" />
         <beans:constructor-arg index="2" ref="contextSource" />
         <beans:property name="searchSubtree" value="true" />
-    </beans:bean-->
-
+    </beans:bean>
+    -->
+    
 </beans:beans>

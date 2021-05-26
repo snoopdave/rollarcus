@@ -18,7 +18,7 @@
 
 package org.apache.roller.weblogger.pojos.wrapper;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.pojos.TagStat;
@@ -128,8 +128,8 @@ public final class WeblogWrapper {
         return this.pojo.getEditorPage();
     }
 
-    public String getBlacklist() {
-        return this.pojo.getBlacklist();
+    public String getBannedwordslist() {
+        return this.pojo.getBannedwordslist();
     }
     
     
@@ -210,6 +210,7 @@ public final class WeblogWrapper {
     }
 
     /* deprecated in Roller 5.1 */
+    @Deprecated
     public Boolean getEnabled() {
         return getVisible();
     }

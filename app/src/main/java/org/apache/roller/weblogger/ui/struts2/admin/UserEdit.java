@@ -39,7 +39,6 @@ import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.ui.struts2.core.Register;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
-import org.apache.struts2.convention.annotation.AllowedMethods;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 
@@ -69,31 +68,39 @@ public class UserEdit extends UIAction {
     }
 
     // admin role required
+    @Override
     public List<String> requiredGlobalPermissionActions() {
         return Collections.singletonList(GlobalPermission.ADMIN);
     }
     
     // no weblog required
+    @Override
     public boolean isWeblogRequired() { 
         return false;
     }
 
     // prepare for action by loading user object we are modifying
+    @Override
     public void myPrepare() {
+
         if (isAdd()) {
-            // create new User
             user = new User();
+
         } else {
             try {
                 // load the user object we are modifying
                 UserManager mgr = WebloggerFactory.getWeblogger().getUserManager();
-                if (bean.getId() != null) {
+                if ( !StringUtils.isEmpty( getBean().getId() ) ) {
+
                     // action came from CreateUser or return from ModifyUser
                     user = mgr.getUser(getBean().getId());
-                } else if (bean.getUserName() != null) {
+
+                } else if ( !StringUtils.isEmpty( bean.getUserName())) {
+
                     // action came from UserAdmin screen.
                     user = mgr.getUserByUserName(getBean().getUserName(), null);
                 }
+
             } catch (Exception e) {
                 log.error("Error looking up user (id/username) :" + bean.getId() + "/" + bean.getUserName(), e);
             }
@@ -104,6 +111,7 @@ public class UserEdit extends UIAction {
      * Show admin user edit page.
      */
     @SkipValidation
+    @Override
     public String execute() {
         if (isAdd()) {
             // initial user create
@@ -150,21 +158,13 @@ public class UserEdit extends UIAction {
             // User.password does not allow null, so generate one
             if (authMethod.equals(AuthMethod.OPENID) ||
                     (authMethod.equals(AuthMethod.DB_OPENID) && !StringUtils.isEmpty(bean.getOpenIdUrl()))) {
-                try {
-                    String randomString = RandomStringUtils.randomAlphanumeric(255);
-                    user.resetPassword(randomString);
-                } catch (WebloggerException e) {
-                    addMessage("yourProfile.passwordResetError");
-                }
+                String randomString = RandomStringUtils.randomAlphanumeric(255);
+                user.resetPassword(randomString);
             }
 
             // reset password if set
             if (!StringUtils.isEmpty(getBean().getPassword())) {
-                try {
-                    user.resetPassword(getBean().getPassword());
-                } catch (WebloggerException e) {
-                    addMessage("yourProfile.passwordResetError");
-                }
+                user.resetPassword(getBean().getPassword());
             }
 
             try {
@@ -198,16 +198,12 @@ public class UserEdit extends UIAction {
                     mgr.grantRole("admin", user);
                 }
                 WebloggerFactory.getWeblogger().flush();
-                if (isAdd()) {
-                    // now that user is saved we have an id value
-                    // store it back in bean for use in next action
-                    bean.setId(user.getId());
-                    // route to edit mode, saveFirst() provides the success message.
-                    return SUCCESS;
-                } else {
-                    addMessage("userAdmin.userSaved");
-                    return INPUT;
-                }
+
+                // successful add or edit: send user back to user admin page
+                bean = new CreateUserBean();
+                addMessage("userAdmin.userSaved");
+                return SUCCESS;
+
             } catch (WebloggerException ex) {
                 log.error("ERROR in action", ex);
                 addError("generic.error.check.logs");
@@ -223,7 +219,7 @@ public class UserEdit extends UIAction {
     private void myValidate() {
         if (isAdd()) {
             String allowed = WebloggerConfig.getProperty("username.allowedChars");
-            if(allowed == null || allowed.trim().length() == 0) {
+            if(allowed == null || allowed.isBlank()) {
                 allowed = Register.DEFAULT_ALLOWED_CHARS;
             }
             String safe = CharSetUtils.keep(getBean().getUserName(), allowed);

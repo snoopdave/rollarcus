@@ -59,7 +59,9 @@ public class MediaFileImageChooser extends MediaFileBase {
     /**
      * Prepares view action
      */
+    @Override
     public void myPrepare() {
+        refreshAllDirectories();
     }
 
     @Override
@@ -74,59 +76,46 @@ public class MediaFileImageChooser extends MediaFileBase {
      * @return String The result of the action.
      */
     @SkipValidation
+    @Override
     public String execute() {
-        MediaFileManager manager = WebloggerFactory.getWeblogger()
-                .getMediaFileManager();
+        MediaFileManager manager = WebloggerFactory.getWeblogger().getMediaFileManager();
         try {
+
             MediaFileDirectory directory;
             if (this.directoryId != null) {
                 directory = manager.getMediaFileDirectory(this.directoryId);
             } else if (this.directoryName != null) {
-                directory = manager.getMediaFileDirectoryByName(
-                        getActionWeblog(), this.directoryName);
+                directory = manager.getMediaFileDirectoryByName(getActionWeblog(), this.directoryName);
                 this.directoryId = directory.getId();
             } else {
-                directory = manager
-                        .getDefaultMediaFileDirectory(getActionWeblog());
+                directory = manager.getDefaultMediaFileDirectory(getActionWeblog());
                 this.directoryId = directory.getId();
             }
 
-            this.childFiles = new ArrayList<MediaFile>();
-
-            for (MediaFile mf : directory.getMediaFiles()) {
-                this.childFiles.add(mf);
-            }
-
-            Collections.sort(this.childFiles, new MediaFileComparator(
-                    MediaFileComparatorType.NAME));
-
+            this.childFiles = new ArrayList<>();
+            this.childFiles.addAll(directory.getMediaFiles());
+            this.childFiles.sort(new MediaFileComparator( MediaFileComparatorType.NAME));
             this.currentDirectory = directory;
 
             // List of available directories
-            List<MediaFileDirectory> sortedDirList = new ArrayList<MediaFileDirectory>();
-            List<MediaFileDirectory> directories = manager
-                    .getMediaFileDirectories(getActionWeblog());
+            List<MediaFileDirectory> sortedDirList = new ArrayList<>();
+            List<MediaFileDirectory> directories = manager.getMediaFileDirectories(getActionWeblog());
             for (MediaFileDirectory mediaFileDirectory : directories) {
-                if (!"default".equals(mediaFileDirectory.getName())
-                        && "default".equals(directory.getName())
-                        || !"default".equals(directory.getName())) {
+                if (!"default".equals(mediaFileDirectory.getName()) || !"default".equals(directory.getName())) {
                     sortedDirList.add(mediaFileDirectory);
                 }
             }
 
-            Collections.sort(sortedDirList, new MediaFileDirectoryComparator(
-                    DirectoryComparatorType.NAME));
+            sortedDirList.sort(new MediaFileDirectoryComparator(
+                DirectoryComparatorType.NAME));
             setAllDirectories(sortedDirList);
 
             return SUCCESS;
 
-        } catch (FileIOException ex) {
+        } catch (Exception ex) {
             log.error("Error viewing media file directory ", ex);
             addError("MediaFile.error.view");
 
-        } catch (Exception e) {
-            log.error("Error viewing media file directory ", e);
-            addError("MediaFile.error.view");
         }
         return SUCCESS;
     }

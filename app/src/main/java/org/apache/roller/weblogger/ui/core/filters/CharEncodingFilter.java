@@ -46,12 +46,14 @@ public class CharEncodingFilter implements Filter {
     /**
      * init
      */
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
     
     /**
      * destroy
      */
+    @Override
     public void destroy() {
     }
     
@@ -59,6 +61,7 @@ public class CharEncodingFilter implements Filter {
      * Set the character encoding and sync up Struts and JSTL locales.  This filter should normally be first (and last)
      * in the chain.
      */
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
     throws IOException, ServletException {
         if (mLogger.isDebugEnabled()) {

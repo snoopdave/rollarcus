@@ -44,6 +44,7 @@ public class BootstrapFilter implements Filter {
     private static Log log = LogFactory.getLog(BootstrapFilter.class);
     
     
+    @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
         
@@ -81,9 +82,11 @@ public class BootstrapFilter implements Filter {
     }
     
     
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         context = filterConfig.getServletContext();
     }
-    
+
+    @Override
     public void destroy() {}    
 }

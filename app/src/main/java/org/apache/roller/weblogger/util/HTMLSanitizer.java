@@ -54,7 +54,7 @@ public class HTMLSanitizer {
 
     public static Pattern forbiddenTags = Pattern.compile("^(script|object|embed|link|style|form|input)$");
     public static Pattern allowedTags = Pattern.compile("^(b|p|i|s|a|img|table|thead|tbody|tfoot|tr|th|td|dd|dl|dt|em|h1|h2|h3|h4|h5|h6|li|ul|ol|span|div|strike|strong|"
-            + "sub|sup|pre|del|code|blockquote|strike|kbd|br|hr|area|map|object|embed|param|link|form|small|big)$");
+            + "sub|sup|pre|del|code|blockquote|kbd|br|hr|area|map|object|embed|param|link|form|small|big)$");
     // <!--.........>
     private static Pattern commentPattern = Pattern.compile("<!--.*");
     // <tag ....props.....>
@@ -353,7 +353,7 @@ public class HTMLSanitizer {
         }
 
         // must close remaining tags
-        while (openTags.size() > 0) {
+        while (!openTags.isEmpty()) {
             //pop all elements before tag and close it
             String poppedTag = openTags.pop();
             ret.html = ret.html + "</" + poppedTag + ">";
@@ -361,7 +361,7 @@ public class HTMLSanitizer {
         }
 
         //set boolean value
-        ret.isValid = ret.invalidTags.size() == 0;
+        ret.isValid = ret.invalidTags.isEmpty();
 
         return ret;
     }

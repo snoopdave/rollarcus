@@ -67,7 +67,7 @@ public final class SiteWideCache implements CacheHandler {
     private ExpiringCacheEntry lastUpdateTime = null;
 
     // reference to our singleton instance
-    private static SiteWideCache singletonInstance = new SiteWideCache();
+    private static final SiteWideCache singletonInstance = new SiteWideCache();
     
     
     private SiteWideCache() {
@@ -193,9 +193,9 @@ public final class SiteWideCache implements CacheHandler {
      */
     public String generateKey(WeblogPageRequest pageRequest) {
         
-        StringBuilder key = new StringBuilder();
+        StringBuilder key = new StringBuilder(128);
         
-        key.append(CACHE_ID).append(":");
+        key.append(CACHE_ID).append(':');
         key.append("page/");
         key.append(pageRequest.getWeblogHandle());
         
@@ -216,7 +216,7 @@ public final class SiteWideCache implements CacheHandler {
             }
             
             if(pageRequest.getWeblogDate() != null) {
-                key.append("/").append(pageRequest.getWeblogDate());
+                key.append('/').append(pageRequest.getWeblogDate());
             }
             
             if(pageRequest.getWeblogCategoryName() != null) {
@@ -228,12 +228,12 @@ public final class SiteWideCache implements CacheHandler {
                     // ignored
                 }
                 
-                key.append("/").append(cat);
+                key.append('/').append(cat);
             }
             
             if("tags".equals(pageRequest.getContext())) {
                 key.append("/tags/");
-                if(pageRequest.getTags() != null && pageRequest.getTags().size() > 0) {
+                if(pageRequest.getTags() != null && !pageRequest.getTags().isEmpty()) {
                     Set ordered = new TreeSet(pageRequest.getTags());
                     String[] tags = (String[]) ordered.toArray(new String[ordered.size()]);
                     key.append(Utilities.stringArrayToString(tags,"+"));
@@ -242,7 +242,7 @@ public final class SiteWideCache implements CacheHandler {
         }
         
         if(pageRequest.getLocale() != null) {
-            key.append("/").append(pageRequest.getLocale());
+            key.append('/').append(pageRequest.getLocale());
         }
         
         // add page number when applicable
@@ -258,7 +258,7 @@ public final class SiteWideCache implements CacheHandler {
         key.append("/deviceType=").append(pageRequest.getDeviceType().toString());
 
         // we allow for arbitrary query params for custom pages
-        if(pageRequest.getCustomParams().size() > 0) {
+        if(!pageRequest.getCustomParams().isEmpty()) {
             String queryString = paramsToString(pageRequest.getCustomParams());
             
             key.append("/qp=").append(queryString);
@@ -283,14 +283,14 @@ public final class SiteWideCache implements CacheHandler {
      */
     public String generateKey(WeblogFeedRequest feedRequest) {
         
-        StringBuilder key = new StringBuilder();
+        StringBuilder key = new StringBuilder(128);
         
-        key.append(CACHE_ID).append(":");
+        key.append(CACHE_ID).append(':');
         key.append("feed/");
         key.append(feedRequest.getWeblogHandle());
         
-        key.append("/").append(feedRequest.getType());
-        key.append("/").append(feedRequest.getFormat());
+        key.append('/').append(feedRequest.getType());
+        key.append('/').append(feedRequest.getFormat());
         
         if (feedRequest.getTerm() != null) {
             key.append("/search/").append(feedRequest.getTerm());
@@ -304,18 +304,18 @@ public final class SiteWideCache implements CacheHandler {
                 // should never happen, utf-8 is always supported
             }
             
-            key.append("/").append(cat);
+            key.append('/').append(cat);
         }
         
         if(feedRequest.getLocale() != null) {
-            key.append("/").append(feedRequest.getLocale());
+            key.append('/').append(feedRequest.getLocale());
         }
         
         if(feedRequest.isExcerpts()) {
             key.append("/excerpts");
         }
         
-        if(feedRequest.getTags() != null && feedRequest.getTags().size() > 0) {
+        if(feedRequest.getTags() != null && !feedRequest.getTags().isEmpty()) {
           String[] tags = new String[feedRequest.getTags().size()];
           new TreeSet(feedRequest.getTags()).toArray(tags);
           key.append("/tags/").append(Utilities.stringArrayToString(tags,"+"));
@@ -328,6 +328,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A weblog entry has changed.
      */
+    @Override
     public void invalidate(WeblogEntry entry) {
         
         if (!cacheEnabled) {
@@ -342,6 +343,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A weblog has changed.
      */
+    @Override
     public void invalidate(Weblog website) {
         
         if (!cacheEnabled) {
@@ -356,6 +358,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A bookmark has changed.
      */
+    @Override
     public void invalidate(WeblogBookmark bookmark) {
         if(WebloggerRuntimeConfig.isSiteWideWeblog(bookmark.getWebsite().getHandle())) {
             invalidate(bookmark.getWebsite());
@@ -366,6 +369,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A folder has changed.
      */
+    @Override
     public void invalidate(WeblogBookmarkFolder folder) {
         if(WebloggerRuntimeConfig.isSiteWideWeblog(folder.getWeblog().getHandle())) {
             invalidate(folder.getWeblog());
@@ -376,6 +380,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A comment has changed.
      */
+    @Override
     public void invalidate(WeblogEntryComment comment) {
         if(WebloggerRuntimeConfig.isSiteWideWeblog(comment.getWeblogEntry().getWebsite().getHandle())) {
             invalidate(comment.getWeblogEntry().getWebsite());
@@ -386,6 +391,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A user profile has changed.
      */
+    @Override
     public void invalidate(User user) {
         // ignored
     }
@@ -394,6 +400,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A category has changed.
      */
+    @Override
     public void invalidate(WeblogCategory category) {
         if(WebloggerRuntimeConfig.isSiteWideWeblog(category.getWeblog().getHandle())) {
             invalidate(category.getWeblog());
@@ -404,6 +411,7 @@ public final class SiteWideCache implements CacheHandler {
     /**
      * A weblog template has changed.
      */
+    @Override
     public void invalidate(WeblogTemplate template) {
         if(WebloggerRuntimeConfig.isSiteWideWeblog(template.getWeblog().getHandle())) {
             invalidate(template.getWeblog());
@@ -421,7 +429,7 @@ public final class SiteWideCache implements CacheHandler {
         
         for (Map.Entry<String, String[]> entry : map.entrySet()) {
             if(entry.getValue() != null) {
-                string.append(",").append(entry.getKey()).append("=").append(entry.getValue()[0]);
+                string.append(',').append(entry.getKey()).append('=').append(entry.getValue()[0]);
             }
         }
         
