@@ -33,9 +33,9 @@ pipeline() {
             steps {
                 dir("app") {
                     sh "mvn clean package"
-                    //sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
-                    //sh "mvn pmd:pmd"
-                    //sh "mvn checkstyle:checkstyle"
+                    sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
+                    sh "mvn pmd:pmd"
+                    sh "mvn checkstyle:checkstyle"
                     archive 'target/*.jar'
                 }
             }
@@ -48,7 +48,7 @@ pipeline() {
                     def javadoc = scanForIssues tool: [$class: 'JavaDoc']
                     def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
                     def pmd = scanForIssues tool: [$class: 'Pmd']
-                    recordIssues enabledForFailure: true, tool: spotBugs()
+                    recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
                     publishIssues issues: [java, javadoc, checkstyle, pmd], unstableTotalAll: 1
                 }
             }
