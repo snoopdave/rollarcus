@@ -49,7 +49,7 @@ pipeline() {
                     def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
                     def pmd = scanForIssues tool: [$class: 'Pmd']
                     recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
-                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 1
+                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 500
                 }
             }
         }
