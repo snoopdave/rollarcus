@@ -16,7 +16,7 @@
  * directory of this distribution.
  */
 
-// @Image(@Image(cloudbees/codeship-jenkinsfile-step:latest)
+// @Image(cloudbees/codeship-jenkinsfile-step:latest)
 pipeline() {
     agent { docker { image 'adoptopenjdk/maven-openjdk11:latest' } }
     tools {
