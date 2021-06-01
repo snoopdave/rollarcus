@@ -1,6 +1,7 @@
 package org.apache.roller.weblogger.util;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -68,6 +69,7 @@ class IPBanListTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("isBanned() reads the file if needed")
     void isBanned4() {
         writeIpBanList("10.0.0.1");
