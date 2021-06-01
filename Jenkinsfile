@@ -18,7 +18,7 @@
 
 // @Image(snoopdave/buildstep:2)
 pipeline() {
-    agent { docker { image 'maven:3.3.3' } }
+    agent { docker { image 'adoptopenjdk/maven-openjdk11:latest' } }
     tools {
         jdk 'jdk11'
         maven 'mvn'
