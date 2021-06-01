@@ -43,14 +43,14 @@ pipeline() {
         stage('Report') {
             steps {
                 junit '**/target/surefire-reports/TEST-*.xml'
-                script {
-                    def java = scanForIssues tool: [$class: 'Java']
-                    def javadoc = scanForIssues tool: [$class: 'JavaDoc']
-                    def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
-                    def pmd = scanForIssues tool: [$class: 'Pmd']
-                    // recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
-                    // publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 500
-                }
+//                script {
+//                    def java = scanForIssues tool: [$class: 'Java']
+//                    def javadoc = scanForIssues tool: [$class: 'JavaDoc']
+//                    def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
+//                    def pmd = scanForIssues tool: [$class: 'Pmd']
+//                    recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
+//                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 500
+//                }
             }
         }
     }
