@@ -18,7 +18,7 @@
 
 // @Image(cloudbees/codeship-jenkinsfile-step:latest)
 pipeline() {
-    agent { docker { image 'adoptopenjdk/maven-openjdk11:latest' } }
+    agent { docker { image 'cloudbees/codeship-jenkinsfile-step:latest' } }
     stages {
         stage('Preparation') {
             steps {
