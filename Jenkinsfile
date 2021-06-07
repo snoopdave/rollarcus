@@ -16,7 +16,7 @@
  * directory of this distribution.
  */
 
-// @Image(snoopdave/buildstep:3)
+// @Image(snoopdave/buildstep:4)
 // @EncryptedEnvFile(docker-creds.encrypted)
 // @ConfigFile(.ci/jenkins.yaml,jenkins.yaml)
 pipeline() {
