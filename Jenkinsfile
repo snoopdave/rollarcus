@@ -16,7 +16,7 @@
  * directory of this distribution.
  */
 
-// @Image(snoopdave/buildstep:4)
+// @Image(cloudbees/codeship-jenkinsfile-step:maven)
 // @EncryptedEnvFile(docker-creds.encrypted)
 // @ConfigFile(.ci/jenkins.yaml,jenkins.yaml)
 pipeline() {
