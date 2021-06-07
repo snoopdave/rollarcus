@@ -17,6 +17,8 @@
  */
 
 // @Image(cloudbees/codeship-jenkinsfile-step:latest)
+// @EncryptedEnvFile(docker-creds.encrypted)
+// @ConfigFile(.ci/jenkins.yaml,jenkins.yaml)
 pipeline() {
     agent { docker { image 'adoptopenjdk/maven-openjdk11:latest' } }
     stages {
@@ -49,5 +51,18 @@ pipeline() {
                 }
             }
         }
+//        stage('Push') {
+//            environment {
+//                registryCredential = 'dockerhubDeploy'
+//            }
+//            steps {
+//                script {
+//                    def image = docker.build(rollarcus:${env.BUILD_ID})
+//                    docker.withRegistry('', registryCredential) {
+//                        customImage.push()
+//                    }
+//                }
+//            }
+//        }
     }
 }
