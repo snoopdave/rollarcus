@@ -55,18 +55,18 @@ pipeline() {
                 }
             }
         }
-//        stage('Push') {
-//            environment {
-//                registryCredential = 'dockerhubDeploy'
-//            }
-//            steps {
-//                script {
-//                    def image = docker.build(rollarcus:${env.BUILD_ID})
-//                    docker.withRegistry('', registryCredential) {
-//                        customImage.push()
-//                    }
-//                }
-//            }
-//        }
+        stage('Push') {
+            environment {
+                registryCredential = 'dockerhubDeploy'
+            }
+            steps {
+                script {
+                    def image = docker.build(rollarcus:${env.BUILD_ID})
+                    docker.withRegistry('', registryCredential) {
+                        customImage.push()
+                    }
+                }
+            }
+        }
     }
 }
