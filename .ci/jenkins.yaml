@@ -1,0 +1,11 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - usernamePassword:
+          id: "dockerhubDeploy"
+          username: "${DOCKER_USERNAME}"
+          password: "${DOCKER_PASSWORD}"
+          description: "Access token for deploying images to DockerHub"
+          scope: GLOBAL
+

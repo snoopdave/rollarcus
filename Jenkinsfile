@@ -16,7 +16,7 @@
  * directory of this distribution.
  */
 
-// @Image(cloudbees/codeship-jenkinsfile-step:latest)
+// @Image(snoopdave/buildstep:4)
 // @EncryptedEnvFile(docker-creds.encrypted)
 // @ConfigFile(.ci/jenkins.yaml,jenkins.yaml)
 pipeline() {
@@ -43,11 +43,11 @@ pipeline() {
                 junit '**/target/surefire-reports/TEST-*.xml'
                 script {
                     def java = scanForIssues tool: [$class: 'Java']
-//                    def javadoc = scanForIssues tool: [$class: 'JavaDoc']
-//                    def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
-//                    def pmd = scanForIssues tool: [$class: 'Pmd']
-//                    recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
-//                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 29000
+                    def javadoc = scanForIssues tool: [$class: 'JavaDoc']
+                    def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
+                    def pmd = scanForIssues tool: [$class: 'Pmd']
+                    recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
+                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 29000
                 }
             }
         }
