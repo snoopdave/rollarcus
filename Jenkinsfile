@@ -61,7 +61,7 @@ pipeline() {
             }
             steps {
                 script {
-                    def image = docker.build(r'rollarcus:${env.BUILD_ID}')
+                    def image = docker.build('rollarcus:${env.BUILD_ID}')
                     docker.withRegistry('', registryCredential) {
                         image.push()
                     }
