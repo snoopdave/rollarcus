@@ -20,7 +20,7 @@
 // @EncryptedEnvFile(docker-creds.encrypted)
 // @ConfigFile(.ci/jenkins.yaml,jenkins.yaml)
 pipeline() {
-    agent { docker { image 'snoopdave/openjdk-dnd:1' } }
+    agent { docker { image 'snoopdave/openjdk-dnd:2' } }
     stages {
         stage('Preparation') {
             steps {
