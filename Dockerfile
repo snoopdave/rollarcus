@@ -70,8 +70,8 @@ RUN mkdir -p data/mediafiles data/searchindex
 WORKDIR /usr/local/tomcat/lib
 RUN apt-get update && apt-get install -y wget
 RUN wget -O postgresql.jar https://jdbc.postgresql.org/download/postgresql-9.4-1202.jdbc4.jar
-RUN wget http://repo2.maven.org/maven2/javax/mail/mail/1.4.1/mail-1.4.1.jar
-RUN wget http://repo2.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar
+RUN wget https://repo1.maven.org/maven2/javax/mail/mail/1.4.1/mail-1.4.1.jar
+RUN wget https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activation-1.1.1.jar
 
 # Add Roller entry-point and go!
 
