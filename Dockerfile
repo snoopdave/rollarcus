@@ -59,13 +59,13 @@ ENV DATABASE_JDBC_USERNAME ${DATABASE_JDBC_USERNAME}
 ENV DATABASE_JDBC_PASSWORD ${DATABASE_JDBC_PASSWORD}
 ENV DATABASE_HOST ${DATABASE_HOST}
 
-# install Roller WAR as ROOT.war, create data dirs
+# Install Roller WAR as ROOT.war, create data dirs
 
 WORKDIR /usr/local/roller
 COPY --from=builder /tmp/roller/app/target/roller.war /usr/local/tomcat/webapps/ROOT.war
 RUN mkdir -p data/mediafiles data/searchindex
 
-# download PostgreSQL and MySQL drivers plus Mail and Activation JARs
+# Download PostgreSQL and MySQL drivers plus Mail and Activation JARs
 
 WORKDIR /usr/local/tomcat/lib
 RUN apt-get update && apt-get install -y wget
