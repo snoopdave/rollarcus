@@ -29,7 +29,7 @@ pipeline() {
     stages {
         stage('Preparation') {
             steps {
-                git(url:'https://github.com/snoopdave/rollarcus.git', branch:"jenkinsfile")
+                git(url:'https://github.com/snoopdave/rollarcus.git', branch:"jenkinsfileagent")
             }
         }
         stage('Build') {
