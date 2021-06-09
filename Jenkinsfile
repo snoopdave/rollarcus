@@ -62,7 +62,7 @@ pipeline() {
             }
             steps {
                 script {
-                    def image = docker.build('rollarcus');
+                    def image = docker.build('snoopdave/rollarcus');
                     docker.withRegistry('', registryCredential) {
                         image.push();
                     }
