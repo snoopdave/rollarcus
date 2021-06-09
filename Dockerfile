@@ -15,27 +15,7 @@
 # copyright in this work, please see the NOTICE file in the top level
 # directory of this distribution.
 
-
 # Example Dockerfile for containerizing Roller
-
-
-# STAGE 1 - BUILD ------------------------------------------------
-
-FROM maven:3.6.0-jdk-11-slim as builder
-
-COPY . /project/
-
-# Build Apache Roller
-
-WORKDIR /tmp
-RUN apt-get update && apt-get install -y git
-RUN git clone https://github.com/apache/roller.git
-WORKDIR /tmp/roller
-RUN git checkout roller-6.0.x; \
-mvn -Duser.home=/builder/home -DskipTests=true -B clean install
-
-
-# STAGE 2 - PACKAGE ------------------------------------------------
 
 FROM tomcat:9.0.20-jre11-slim
 
@@ -62,7 +42,7 @@ ENV DATABASE_HOST ${DATABASE_HOST}
 # Install Roller WAR as ROOT.war, create data dirs
 
 WORKDIR /usr/local/roller
-COPY --from=builder /tmp/roller/app/target/roller.war /usr/local/tomcat/webapps/ROOT.war
+COPY ./app/target/roller.war /usr/local/tomcat/webapps/ROOT.war
 RUN mkdir -p data/mediafiles data/searchindex
 
 # Download PostgreSQL and MySQL drivers plus Mail and Activation JARs
@@ -75,8 +55,8 @@ RUN wget https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/activa
 
 # Add Roller entry-point and go!
 
-COPY --from=builder /project/docker/entry-point.sh /usr/local/tomcat/bin
-COPY --from=builder /project/docker/wait-for-it.sh /usr/local/tomcat/bin
+COPY ./docker/entry-point.sh /usr/local/tomcat/bin
+COPY ./docker/wait-for-it.sh /usr/local/tomcat/bin
 RUN chgrp -R 0 /usr/local/tomcat
 RUN chmod -R g+rw /usr/local/tomcat
 
