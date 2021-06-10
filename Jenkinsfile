@@ -52,9 +52,12 @@ pipeline() {
                     def checkstyle = scanForIssues tool: [$class: 'CheckStyle']
                     def pmd = scanForIssues tool: [$class: 'Pmd']
                     recordIssues enabledForFailure: true, failOnError: false, tool: spotBugs()
-                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 29000
+                    publishIssues issues: [java, javadoc, checkstyle, pmd], failOnError: false, unstableTotalAll: 29001
                 }
             }
+        }
+        stage('Archive') {
+            archiveArtifacts "app/target/spotbugsXml.xml, app/target/pmd.xml, app/target/checkstyle-result.xml"
         }
         stage('Push') {
             environment {
