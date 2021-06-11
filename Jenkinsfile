@@ -46,6 +46,7 @@ pipeline() {
         stage('Report') {
             steps {
                 junit '**/target/surefire-reports/TEST-*.xml'
+                jacoco
                 script {
                     def java = scanForIssues tool: [$class: 'Java']
                     def javadoc = scanForIssues tool: [$class: 'JavaDoc']
