@@ -8,4 +8,10 @@ credentials:
           password: "${DOCKER_PASSWORD}"
           description: "Access token for deploying images to DockerHub"
           scope: GLOBAL
+      - aws:
+          scope: GLOBAL
+          id: "AWS"
+          accessKey: "${AWS_ACCESS_KEY}"
+          secretKey: "${AWS_SECRET_ACCESS_KEY}"
+          description: "AWS Credentials"
 

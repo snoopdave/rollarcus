@@ -3,4 +3,4 @@ app:
     image: dummy/dummy
     dockerfile_path: Dockerfile
   encrypted_env_file:
-    - docker-creds.encrypted
+    - creds.encrypted

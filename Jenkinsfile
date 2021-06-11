@@ -17,7 +17,7 @@
  */
 
 // @Image(cloudbees/codeship-jenkinsfile-step:maven)
-// @EncryptedEnvFile(docker-creds.encrypted)
+// @EncryptedEnvFile(creds.encrypted)
 // @ConfigFile(.ci/jenkins.yaml,jenkins.yaml)
 pipeline() {
     agent {
@@ -58,7 +58,9 @@ pipeline() {
         }
         stage('Archive') {
             steps {
-                archiveArtifacts "app/target/spotbugsXml.xml, app/target/pmd.xml, app/target/checkstyle-result.xml"
+                withAWS(credentials: "AWS") {
+                    archiveArtifacts "app/target/spotbugsXml.xml, app/target/pmd.xml, app/target/checkstyle-result.xml"
+                }
             }
         }
         stage('Push') {
