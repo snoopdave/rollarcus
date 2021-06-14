@@ -39,7 +39,6 @@ pipeline() {
                     sh "mvn com.github.spotbugs:spotbugs-maven-plugin:3.1.7:spotbugs"
                     sh "mvn pmd:pmd"
                     sh "mvn checkstyle:checkstyle"
-                    archive 'target/*.jar'
                 }
                 configFileProvider([configFile(fileId: 'maven-test', variable: 'MAVEN_SETTINGS')]) {
                     sh 'echo $MAVEN_SETTINGS'
@@ -49,7 +48,6 @@ pipeline() {
         stage('Report') {
             steps {
                 junit '**/target/surefire-reports/TEST-*.xml'
-                //jacoco
                 script {
                     def java = scanForIssues tool: [$class: 'Java']
                     def javadoc = scanForIssues tool: [$class: 'JavaDoc']
