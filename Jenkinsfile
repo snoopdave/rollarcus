@@ -41,7 +41,7 @@ pipeline() {
                     sh "mvn checkstyle:checkstyle"
                 }
                 configFileProvider([configFile(fileId: 'maven-test', variable: 'MAVEN_SETTINGS')]) {
-                    sh 'echo $MAVEN_SETTINGS'
+                    sh 'cat $MAVEN_SETTINGS'
                 }
             }
         }
