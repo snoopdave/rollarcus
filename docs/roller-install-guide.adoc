@@ -55,6 +55,9 @@ will use your Roller site to author HTML, then you should configure
 Roller to sanitize all HTML published by the system. Do this by setting
 the _weblogAdminsUntrusted=true_ property in your
 _roller-custom.properties_ file.
+* *Do not allow File Uploads*. By default Roller allows users to upload
+files for display on their blogs. If don't trust your users, this is unsafe
+and you should disable File Uploads via the Server Administration page.
 * *Do not allow HTML in comments*. Roller can allow users to write
 comments in a safe-subset of HTML, but HTML use in comments is not
 allowed at all because of security concerns with even a so called
@@ -200,9 +203,9 @@ password: *****
 mysql> create database rollerdb DEFAULT CHARACTER SET utf8 DEFAULT
 COLLATE utf8_general_ci;
 
-mysql> grant all on rollerdb.* to scott@`%' identified by `tiger';
+mysql> grant all on rollerdb.* to scott@'%' identified by 'tiger';
 
-mysql> grant all on rollerdb.* to scott@localhost identified by `tiger';
+mysql> grant all on rollerdb.* to scott@localhost identified by 'tiger';
 
 mysql> exit;
 ----
@@ -212,7 +215,7 @@ If you’re using Derby:
 ----
 % ij
 
-ij> connect `jdbc:derby:/path/to/new/MYROLLERDB;create=true';
+ij> connect 'jdbc:derby:/path/to/new/MYROLLERDB;create=true';
 
 ij> quit;
 ----
@@ -405,7 +408,7 @@ on the Tomcat classpath and therefore available to Roller.
 === Using Server-provided database & mail resources (optional)
 
 It’s easiest to setup your Roller for Tomcat database connection using
-the `jdbc' approach and the mail connection using `properties' but in
+the 'jdbc' approach and the mail connection using 'properties' but in
 some cases you might want to use the datasource and/or mail session
 resources provided by your application server instead. For
 authentication-requiring mail connections like Google’s Gmail service,

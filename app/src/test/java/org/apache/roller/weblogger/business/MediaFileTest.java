@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.*;
+import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,11 +48,9 @@ public class MediaFileTest  {
     public MediaFileTest() {
     }
 
+    @BeforeEach
     public void setUp() throws Exception {
         TestUtils.setupWeblogger();
-    }
-
-    public void tearDown() throws Exception {
     }
 
     /**
@@ -510,14 +509,13 @@ public class MediaFileTest  {
             assertFalse(searchResults.isEmpty());
             assertEquals(id2, (searchResults.get(0)).getId());
             assertNotNull((searchResults.get(0)).getDirectory());
-            assertEquals("default", (searchResults.get(0)).getDirectory()
-                    .getName());
+            assertEquals("default", searchResults.get(0).getDirectory().getName());
 
             MediaFileFilter filter3 = new MediaFileFilter();
             filter3.setName("test_work.jpg");
             searchResults = mfMgr.searchMediaFiles(testWeblog, filter3);
             assertFalse(searchResults.isEmpty());
-            assertEquals(id1, ((MediaFile) searchResults.get(0)).getId());
+            assertEquals(id1, searchResults.get(0).getId());
 
             // search by tag
 
@@ -541,8 +539,7 @@ public class MediaFileTest  {
             searchResults = mfMgr.searchMediaFiles(testWeblog, filter4);
             assertFalse(searchResults.isEmpty());
             assertEquals(1, searchResults.size());
-            assertEquals("test_work.jpg",
-                    ((MediaFile) searchResults.get(0)).getName());
+            assertEquals("test_work.jpg", searchResults.get(0).getName());
 
             // search by size
 
@@ -552,8 +549,7 @@ public class MediaFileTest  {
             searchResults = mfMgr.searchMediaFiles(testWeblog, filter6);
             assertFalse(searchResults.isEmpty());
             assertEquals(1, searchResults.size());
-            assertEquals("test_work.jpg",
-                    ((MediaFile) searchResults.get(0)).getName());
+            assertEquals("test_work.jpg", searchResults.get(0).getName());
 
             MediaFileFilter filter7 = new MediaFileFilter();
             filter7.setSize(3000);
@@ -561,8 +557,7 @@ public class MediaFileTest  {
             searchResults = mfMgr.searchMediaFiles(testWeblog, filter7);
             assertFalse(searchResults.isEmpty());
             assertEquals(1, searchResults.size());
-            assertEquals("test_home.jpg",
-                    ((MediaFile) searchResults.get(0)).getName());
+            assertEquals("test_home.jpg", searchResults.get(0).getName());
 
             MediaFileFilter filter8 = new MediaFileFilter();
             filter8.setSize(3000);
@@ -570,8 +565,7 @@ public class MediaFileTest  {
             searchResults = mfMgr.searchMediaFiles(testWeblog, filter8);
             assertFalse(searchResults.isEmpty());
             assertEquals(1, searchResults.size());
-            assertEquals("test_pers.jpg",
-                    ((MediaFile) searchResults.get(0)).getName());
+            assertEquals("test_pers.jpg", searchResults.get(0).getName());
 
             MediaFileFilter filter9 = new MediaFileFilter();
             filter9.setSize(3000);
