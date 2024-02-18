@@ -230,6 +230,10 @@ limitations under the License.
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -463,6 +467,10 @@ limitations under the License.
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -470,6 +478,12 @@ limitations under the License.
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-taglibs</artifactId>
             <version>${spring.security.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
