@@ -5,6 +5,7 @@
          version="4.0">
 
     <display-name>Roller Weblogger</display-name>
+    <absolute-ordering/>
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
