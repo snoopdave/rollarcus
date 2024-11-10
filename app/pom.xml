@@ -506,7 +506,7 @@ limitations under the License.
         <dependency>
             <groupId>com.jgeppert.struts2.bootstrap</groupId>
             <artifactId>struts2-bootstrap-plugin</artifactId>
-            <version>5.0.4</version>
+            <version>4.0.1</version>
         </dependency>
 
         <dependency>
