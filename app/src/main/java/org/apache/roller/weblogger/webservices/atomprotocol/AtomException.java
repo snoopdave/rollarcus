@@ -15,27 +15,33 @@
 * copyright in this work, please see the NOTICE file in the top level
 * directory of this distribution.
 */
-
 package org.apache.roller.weblogger.webservices.atomprotocol;
 
-import com.rometools.propono.atom.server.AtomHandlerFactory;
-import com.rometools.propono.atom.server.AtomHandler;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Extends {@link com.rometools.propono.atom.server.AtomHandlerFactory} to create and return 
- * {@link com.rometools.propono.atom.server.impl.FileBasedAtomHandler}.
+ * Base exception for the AtomPub implementation. Carries the HTTP status code
+ * that the dispatcher servlet should return to the client.
  */
-public class RollerAtomHandlerFactory extends AtomHandlerFactory {
-    
-    /**
-     * Create new AtomHandler.
-     */
-    @Override
-    public AtomHandler newAtomHandler(
-            HttpServletRequest req, HttpServletResponse res) {
-        return new RollerAtomHandler(req, res);
-    }    
+public class AtomException extends Exception {
+
+    private final int status;
+
+    public AtomException(String msg) {
+        this(msg, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null);
+    }
+
+    public AtomException(String msg, Throwable cause) {
+        this(msg, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, cause);
+    }
+
+    protected AtomException(String msg, int status, Throwable cause) {
+        super(msg, cause);
+        this.status = status;
+    }
+
+    /** HTTP status code to send to the client for this error. */
+    public int getStatus() {
+        return status;
+    }
 }
-      

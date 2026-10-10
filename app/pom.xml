@@ -24,7 +24,7 @@ limitations under the License.
     <parent>
         <groupId>org.apache.roller</groupId>
         <artifactId>roller-project</artifactId>
-        <version>6.1.6</version>
+        <version>7.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -46,6 +46,7 @@ limitations under the License.
         <commons-codec.version>1.22.1</commons-codec.version>
         <commons-text.version>1.15.0</commons-text.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
+        <commons-secure-xml.version>1.0.0</commons-secure-xml.version>
         <eclipse-link.version>4.0.9</eclipse-link.version>
         <guice.version>7.0.0</guice.version>
         <log4j2.version>2.26.1</log4j2.version>
@@ -54,7 +55,7 @@ limitations under the License.
         <maven-war.version>3.5.1</maven-war.version>
         <maven-surefire.version>3.5.6</maven-surefire.version>
         <maven-antrun.version>1.0b3</maven-antrun.version>
-        <rome.version>1.19.0</rome.version> <!-- locked in place since next version removes popono -->
+        <rome.version>1.19.0</rome.version> <!-- ROME core; used for feeds/planet (AtomPub no longer uses Propono) -->
         <slf4j.version>2.0.19</slf4j.version>
         <spring.version>5.3.39</spring.version>
         <spring.security.version>5.8.16</spring.security.version>
@@ -376,6 +377,12 @@ limitations under the License.
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-secure-xml</artifactId>
+            <version>${commons-secure-xml.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.xmlrpc</groupId>
             <artifactId>xmlrpc-common</artifactId>
             <version>${xmlrpc-version}</version>
@@ -522,20 +529,6 @@ limitations under the License.
             </exclusions>
         </dependency>
 
-        <!-- todo: remove/replace propono -->
-        <dependency>
-            <groupId>com.rometools</groupId>
-            <artifactId>rome-propono</artifactId>
-            <version>${rome.version}</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <dependency>
             <groupId>net.oauth.core</groupId>
             <artifactId>oauth-provider</artifactId>
@@ -592,6 +585,28 @@ limitations under the License.
             <scope>test</scope>
         </dependency>
 
+        <!-- Jing: RELAX NG validator, used to check AtomWriter output against
+             the RFC 4287 / RFC 5023 schemas in AtomSchemaValidationTest. -->
+        <dependency>
+            <groupId>com.thaiopensource</groupId>
+            <artifactId>jing</artifactId>
+            <version>20091111</version>
+            <scope>test</scope>
+            <!-- Jing declares these with runtime scope, which would replace
+                 the newer versions that reach the WAR through nekohtml.
+                 Jing uses the JDK's XML parser instead. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -627,7 +642,7 @@ limitations under the License.
                     <dependency>
                         <groupId>org.apache.roller</groupId>
                         <artifactId>db-utils</artifactId>
-                        <version>6.1.6</version>
+                        <version>7.0.0-SNAPSHOT</version>
                     </dependency>
                     <dependency>
                         <groupId>commons-dbcp</groupId>
